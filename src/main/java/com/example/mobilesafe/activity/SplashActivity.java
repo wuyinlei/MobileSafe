@@ -9,13 +9,16 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.mobilesafe.R;
 
 public class SplashActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private RelativeLayout rlRoot;
     private static final int CODE_CENTER_HOME = 0;
     private SharedPreferences mPres;
     private TextView tv_version;
@@ -64,6 +67,12 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
         btn_start.setOnClickListener(this);
         tv_version = (TextView) findViewById(R.id.tv_version);
         tv_version.setText("版本号:" + getVersionName());
+        rlRoot = (RelativeLayout) findViewById(R.id.rlRoot);
+
+        //渐变的动画效果
+        AlphaAnimation anim = new AlphaAnimation(0.3f,1f);
+        anim.setDuration(2000);
+        rlRoot.startAnimation(anim);
     }
 
     /**

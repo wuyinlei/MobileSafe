@@ -34,13 +34,10 @@ public class SettingActivity extends AppCompatActivity {
         tvtitle = (TextView) findViewById(R.id.tv_title);
         tvdesc = (TextView) findViewById(R.id.tv_desc);
         siv_update = (SettingItemView) findViewById(R.id.siv_update);
-        siv_update.setTitle("自动更新设置");
         final boolean autoUpdate = mPrefs.getBoolean("auto_update", true);
         if (autoUpdate) {
-            siv_update.setDesc("自动更新已开启");
             siv_update.setChecked(true);
         }else {
-            siv_update.setDesc("自动更新已关闭");
             siv_update.setChecked(false);
         }
         siv_update.setOnClickListener(new View.OnClickListener() {
@@ -50,13 +47,11 @@ public class SettingActivity extends AppCompatActivity {
                 if (siv_update.isChecked()) {
                     //设置不勾选
                     siv_update.setChecked(false);
-                    siv_update.setDesc("自动更新已关闭");
 
                     //更新SP
                     mPrefs.edit().putBoolean("auto_update", false).commit();
                 } else {
                     siv_update.setChecked(true);
-                    siv_update.setDesc("自动更新已经开启");
                     mPrefs.edit().putBoolean("auto_update", true).commit();
                 }
             }

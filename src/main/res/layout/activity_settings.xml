@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.example.mobilesafe"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -11,6 +13,9 @@
 
     <com.example.mobilesafe.view.SettingItemView
         android:id="@+id/siv_update"
+        app:title_update="自动更新设置"
+        app:desc_on="自动更新已开启"
+        app:desc_off="自动更新已关闭"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
