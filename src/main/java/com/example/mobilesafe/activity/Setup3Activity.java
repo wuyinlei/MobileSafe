@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.example.mobilesafe.R;
 
-public class Setup3Activity extends AppCompatActivity {
+public class Setup3Activity extends BaseSetupActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,11 +15,18 @@ public class Setup3Activity extends AppCompatActivity {
         setContentView(R.layout.activity_setup_3);
     }
 
-    public void next(View view){
-        startActivity(new Intent(Setup3Activity.this,Setup4Activity.class));
+    @Override
+    public void showPreviousPage() {
+        startActivity(new Intent(Setup3Activity.this, Setup2Activity.class));
+        finish();
+        overridePendingTransition(R.anim.previous_in, R.anim.previous_out);
     }
 
-    public void previous(View view){
-        startActivity(new Intent(Setup3Activity.this,Setup2Activity.class));
+    @Override
+    public void showNextPage() {
+        startActivity(new Intent(Setup3Activity.this, Setup4Activity.class));
+        finish();
+        overridePendingTransition(R.anim.tran_out, R.anim.tran_in);
     }
+
 }

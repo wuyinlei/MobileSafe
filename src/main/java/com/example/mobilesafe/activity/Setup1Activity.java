@@ -19,7 +19,7 @@ import com.example.mobilesafe.R;
 /**
  * 第一个向导页
  */
-public class Setup1Activity extends AppCompatActivity {
+public class Setup1Activity extends BaseSetupActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +27,15 @@ public class Setup1Activity extends AppCompatActivity {
         setContentView(R.layout.activity_setup_1);
     }
 
-    public void next(View view){
-        startActivity(new Intent(Setup1Activity.this,Setup2Activity.class));
+    @Override
+    public void showPreviousPage() {
+
+    }
+
+    @Override
+    public void showNextPage() {
+        startActivity(new Intent(Setup1Activity.this, Setup2Activity.class));
         finish();
+        overridePendingTransition(R.anim.tran_out, R.anim.tran_in);
     }
 }

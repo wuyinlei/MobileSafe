@@ -8,7 +8,7 @@ import android.view.View;
 
 import com.example.mobilesafe.R;
 
-public class Setup4Activity extends AppCompatActivity {
+public class Setup4Activity extends BaseSetupActivity {
 
     private SharedPreferences mPres;
 
@@ -19,14 +19,21 @@ public class Setup4Activity extends AppCompatActivity {
         mPres = getSharedPreferences("config", MODE_PRIVATE);
     }
 
-    public void next(View view) {
-        startActivity(new Intent(Setup4Activity.this, LostFoubdActivity.class));
+    @Override
+    public void showPreviousPage() {
+        startActivity(new Intent(Setup4Activity.this, Setup3Activity.class));
         finish();
-        //更新sp，表示已经展示过向导了，下次进来就不展示了
-        mPres.edit().putBoolean("configed",true).commit();
+        overridePendingTransition(R.anim.previous_in, R.anim.previous_out);
     }
 
-    public void previous(View view) {
-        startActivity(new Intent(Setup4Activity.this, Setup3Activity.class));
+    @Override
+    public void showNextPage() {
+        startActivity(new Intent(Setup4Activity.this, LostFoubdActivity.class));
+        finish();
+        overridePendingTransition(R.anim.tran_out, R.anim.tran_in);
+        //更新sp，表示已经展示过向导了，下次进来就不展示了
+        mPres.edit().putBoolean("configed", true).commit();
     }
+
+
 }

@@ -76,6 +76,7 @@
         android:padding="5dp"
         android:onClick="reEnter"
         android:clickable="true"
+        android:background="@drawable/gradient_box"
         android:text="重新进入设置向导"
         android:textColor="@color/black"
         android:textSize="@dimen/txt_l" />
