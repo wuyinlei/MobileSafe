@@ -1,6 +1,7 @@
 package com.example.mobilesafe.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
@@ -26,10 +27,16 @@ import android.widget.Toast;
 public abstract class BaseSetupActivity extends AppCompatActivity {
 
     private GestureDetector detector;
+    public SharedPreferences mPres;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /**
+         * 第一个参数getSharedPreferences（第一个参数，第二个参数）;
+         第一个参数是存储时的名称，第二个参数则是文件的打开方式~
+         */
+        mPres = getSharedPreferences("config", MODE_PRIVATE);
         //手势识别器
         detector = new GestureDetector(this,
                 new GestureDetector.SimpleOnGestureListener() {

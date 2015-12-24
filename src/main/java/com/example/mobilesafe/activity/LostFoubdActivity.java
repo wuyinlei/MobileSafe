@@ -13,7 +13,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.mobilesafe.R;
 
@@ -24,6 +27,9 @@ import com.example.mobilesafe.R;
 public class LostFoubdActivity extends AppCompatActivity {
 
     private SharedPreferences mPres;
+    private TextView tvSafePhone;
+    private ImageView lock;
+    private ImageView unlock;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +38,15 @@ public class LostFoubdActivity extends AppCompatActivity {
         boolean config = mPres.getBoolean("configed", false);
         if (config) {
             setContentView(R.layout.activity_lost_found);
+            initialize();
+            String phone = mPres.getString("safe_phone", "");
+            tvSafePhone.setText(phone);
         } else {
             //跳转设置向导页
             startActivity(new Intent(LostFoubdActivity.this,Setup1Activity.class));
             finish();
         }
+
     }
 
     /**
@@ -46,5 +56,22 @@ public class LostFoubdActivity extends AppCompatActivity {
     public void reEnter(View view){
         startActivity(new Intent(LostFoubdActivity.this,Setup1Activity.class));
         finish();
+    }
+
+    /**
+     * 初始化控件
+     */
+    private void initialize() {
+        tvSafePhone = (TextView) findViewById(R.id.tvSafePhone);
+        lock = (ImageView) findViewById(R.id.lock);
+        unlock = (ImageView) findViewById(R.id.unlock);
+        boolean protect = mPres.getBoolean("protect", false);
+        if (protect){
+            lock.setVisibility(View.VISIBLE);
+            unlock.setVisibility(View.GONE);
+        } else {
+            unlock.setVisibility(View.VISIBLE);
+            lock.setVisibility(View.GONE);
+        }
     }
 }

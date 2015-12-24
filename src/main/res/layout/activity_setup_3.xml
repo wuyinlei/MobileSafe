@@ -21,9 +21,11 @@
         android:id="@+id/editPhone"
         android:hint="请输入和选择安全号码"
         android:layout_width="match_parent"
+        android:inputType="phone"
+        android:focusable="true"
         android:layout_height="wrap_content" />
     <Button
-        android:id="@+id/selectPhoneNum"
+        android:id="@+id/selectPhonenum"
         android:text="请选择练习人号码"
         android:background="@color/shallow_green"
         android:layout_width="match_parent"

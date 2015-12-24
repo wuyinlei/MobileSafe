@@ -20,10 +20,10 @@
             android:text="安全号码" />
 
         <TextView
+            android:id="@+id/tvSafePhone"
             style="@style/ContentStyle"
             android:layout_alignParentRight="true"
-            android:padding="@dimen/space_s"
-            android:text="18503942380" />
+            android:padding="@dimen/space_s" />
     </RelativeLayout>
 
     <ImageView
@@ -49,6 +49,7 @@
             android:visibility="gone" />
 
         <ImageView
+            android:id="@+id/lock"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_alignParentRight="true"
@@ -56,6 +57,7 @@
             android:src="@mipmap/lock" />
 
         <ImageView
+            android:id="@+id/unlock"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_alignParentRight="true"

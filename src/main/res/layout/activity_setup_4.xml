@@ -15,12 +15,6 @@
         android:text="防盗装置没有开启呦"
         android:textSize="@dimen/txt_m" />
 
-    <Button
-        android:id="@+id/selectPhoneNum"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/shallow_green"
-        android:text="请选择练习人号码" />
 
     <LinearLayout
         android:layout_width="match_parent"
