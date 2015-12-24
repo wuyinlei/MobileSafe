@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.mobilesafe.R;
 import com.example.mobilesafe.adapter.HomeAdapter;
+import com.example.mobilesafe.utils.MD5Utils;
 
 /**
  * Created by 若兰 on 2015/12/23.
@@ -94,9 +95,13 @@ public class HomeActivity extends AppCompatActivity {
                 String password = etPassword.getText().toString();
                 String savePassword = mPref.getString("password", null);
                 if (!TextUtils.isEmpty(password)) {
-                    if (password.equals(savePassword)) {
-                        Toast.makeText(HomeActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                    //要进行MD5加密之后在对比
+                    if (MD5Utils.encode(password).equals(savePassword)) {
+                        // Toast.makeText(HomeActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                        //跳转到手机防盗页面
                         dialog.dismiss();
+                        startActivity(new Intent(HomeActivity.this, LostFoubdActivity.class));
+
                     } else {
                         Toast.makeText(HomeActivity.this, "输入的密码不正确", Toast.LENGTH_SHORT).show();
                     }
@@ -136,9 +141,12 @@ public class HomeActivity extends AppCompatActivity {
                 String confirm = etConfirm.getText().toString();
                 if (!TextUtils.isEmpty(password) && !TextUtils.isEmpty(confirm)) {
                     if (password.equals(confirm)) {
-                        Toast.makeText(HomeActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-                        mPref.edit().putString("password", password).commit();
+                        /// Toast.makeText(HomeActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                        //对密码进行MD5加密处理
+                        mPref.edit().putString("password", MD5Utils.encode(password)).commit();
+                        //跳转到防盗页面
                         dialog.dismiss();
+                        startActivity(new Intent(HomeActivity.this, LostFoubdActivity.class));
                     } else {
                         Toast.makeText(HomeActivity.this, "您输入的两次密码不一致", Toast.LENGTH_SHORT).show();
                     }
@@ -155,7 +163,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
         dialog.show();
-
     }
 
 }

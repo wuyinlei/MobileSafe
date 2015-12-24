@@ -21,7 +21,6 @@
     <dimen name="height_divider">1px</dimen>
 
 
-
     <dimen name="avatar_size">48dp</dimen>
     <dimen name="avatar_size_l">60dp</dimen>
     <dimen name="avatar_size_xl">72dp</dimen>
