@@ -3,6 +3,7 @@ package com.example.mobilesafe.activity;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -62,7 +63,7 @@ public class DragViewActivity extends AppCompatActivity {
         final int winHeight = getWindowManager().getDefaultDisplay().getHeight();
 
         //根据图片的位置来设置提示框的显示位置
-        if (lastY > winHeight/2){   //上边的显示，下部的隐藏
+        if (lastY > winHeight / 2) {   //上边的显示，下部的隐藏
             tvTop.setVisibility(View.VISIBLE);
             tvBottom.setVisibility(View.INVISIBLE);
         } else {
@@ -78,6 +79,33 @@ public class DragViewActivity extends AppCompatActivity {
 
         //重新设置位置
         ivdrag.setLayoutParams(layoutParams);
+
+        //双击事件，在这里我们定义了一个long的数组，数组长度写几就是几击事件
+        final long[] mHits = new long[2];
+
+        ivdrag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //在这里用到了数组arraycopy
+                //原理就是，假设我现在数组长度是3   时间点分别为0,100,200，也就是说我们
+                //每次的点击间隔是100ms
+                /**
+                 * 第一次点击：进行copy，第0位是100，第二位是200，这时候第三位是300
+                 * 第二次点击：进行copy，第0位是200，第二位是300，第三位是400
+                 * 第三次点击：进行copy，第0位是300，第二位是400，第三位是500
+                 * 这个时候由于第三次点击是位于第0位置，也就是该进行判断了，这个时候我们拿到系统的时间和这个记录的时间进行比较
+                 * 如果小于500ms（我们可以自行规定在多长时间内点击多少次算合格），那么就会重新绘画
+                 */
+                System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+                mHits[mHits.length - 1] = SystemClock.uptimeMillis();   //每次进行copy之后，把当前的时候赋值给当前点击
+                //如果假如我们规定数组长度是3，也就是点击三次，这个时候我们就会进行下面的判断，如果符合，就执行我们想要的逻辑
+                //如果不符合，就不执行我们想要执行的逻辑，也没法执行
+                if (mHits[0] > SystemClock.uptimeMillis() - 500) {
+                    ivdrag.layout(winWidth / 2 - ivdrag.getWidth() / 2, ivdrag.getTop(), winWidth / 2 + ivdrag.getWidth(), ivdrag.getBottom());
+                }
+            }
+        });
 
         //设置拖拽监听
         ivdrag.setOnTouchListener(new View.OnTouchListener() {
@@ -118,18 +146,18 @@ public class DragViewActivity extends AppCompatActivity {
                             field = aClass.getField("status_bar_height");
                             x = Integer.parseInt(field.get(obj).toString());
                             sbar = getResources().getDimensionPixelSize(x);
-                        } catch(Exception e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
 
                         //如果满足了一下的情况，就直接break，一下的情况是
                         //出左侧边界，出上部边界，出下部边界，出右侧边界
-                        if (l<0 || r>winWidth || t<0 || b>winHeight-sbar){
+                        if (l < 0 || r > winWidth || t < 0 || b > winHeight - sbar) {
                             break;
                         }
 
                         //根据图片的位置来设置提示框的显示位置
-                        if (t > winHeight/2){   //上边的显示，下部的隐藏
+                        if (t > winHeight / 2) {   //上边的显示，下部的隐藏
                             tvTop.setVisibility(View.VISIBLE);
                             tvBottom.setVisibility(View.INVISIBLE);
                         } else {
@@ -157,7 +185,11 @@ public class DragViewActivity extends AppCompatActivity {
                         edit.commit();
                         break;
                 }
-                return true;
+
+                //在这里拦截了
+                //return true;
+                //事件要往下传递
+                return false;   //让onClick可以响应
             }
         });
     }

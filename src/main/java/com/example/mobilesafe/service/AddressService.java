@@ -10,6 +10,8 @@ import android.graphics.PixelFormat;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -123,14 +125,24 @@ public class AddressService extends Service {
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
         params.width = WindowManager.LayoutParams.WRAP_CONTENT;
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+               // | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE   这个要去掉，否则不能响应我们的触摸事件
                 | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
         params.format = PixelFormat.TRANSLUCENT;
-        params.type = WindowManager.LayoutParams.TYPE_TOAST;
+        //电话窗口，用于电话交互
+        params.type = WindowManager.LayoutParams.TYPE_PHONE;
+        params.gravity = Gravity.LEFT + Gravity.TOP;   //将重心位置设置到左上方(0,0)
+        //而不是默认的重心位置
         params.setTitle("Toast");
 
         int style = mPres.getInt("address_style", 0);  //读取保存的style
 
+        //获取到保存的坐标，基于左上方的偏移量
+        int lastX = mPres.getInt("lastX", 0);
+        int lastY = mPres.getInt("lastY", 0);
+
+        //设置悬浮窗的位置
+        params.x = lastX;
+        params.y = lastY;
         //归属地背景的数组
         int[] bgs = new int[]{R.drawable.call_locate_white1, R.drawable.call_locate_orange1
                 , R.drawable.call_locate_blue1, R.drawable.call_locate_gray1, R.drawable.call_locate_green1};
@@ -143,6 +155,15 @@ public class AddressService extends Service {
         //下面就把自己定义的toast显示在了window上
         tvText.setText(text);
         mWM.addView(view, params);
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+
+                return true;
+            }
+        });
 
     }
 }
