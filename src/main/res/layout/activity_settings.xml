@@ -26,4 +26,15 @@
         app:desc_on="归属地显示已开启"
         app:title_update="电话归属地显示设置" />
 
+    <com.example.mobilesafe.view.SettingClickView
+        android:id="@+id/scvStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.example.mobilesafe.view.SettingClickView
+        android:id="@+id/addressWhere"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
 </LinearLayout>

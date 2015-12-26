@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
@@ -37,6 +38,8 @@ public class AddressService extends Service {
     View view;
     OutCallReceiver receiver;
 
+    private SharedPreferences mPres;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -45,7 +48,8 @@ public class AddressService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        mPres = getSharedPreferences("config", MODE_PRIVATE);
+        //获取手机电话的服务
         tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         listener = new MyListener();
         //监听打电话的状态
@@ -73,7 +77,6 @@ public class AddressService extends Service {
                     if (mWM != null && view != null) {
                         mWM.removeView(view);   //从windoe中移除view
                     }
-
                     break;
             }
             super.onCallStateChanged(state, incomingNumber);
@@ -108,7 +111,8 @@ public class AddressService extends Service {
     }
 
     /**
-     * 自定义归属地悬浮框
+     * 自定义归属地悬浮框，在Window级别上显示，就是在主屏中显示
+     * 这个是我们根据toast的源码改变的，（因为toast可以在任何地方显示）
      */
     private void showToast(String text) {
         Toast.makeText(this, "你好", Toast.LENGTH_SHORT).show();
@@ -125,8 +129,16 @@ public class AddressService extends Service {
         params.type = WindowManager.LayoutParams.TYPE_TOAST;
         params.setTitle("Toast");
 
+        int style = mPres.getInt("address_style", 0);  //读取保存的style
 
+        //归属地背景的数组
+        int[] bgs = new int[]{R.drawable.call_locate_white1, R.drawable.call_locate_orange1
+                , R.drawable.call_locate_blue1, R.drawable.call_locate_gray1, R.drawable.call_locate_green1};
+        //加载自定义的布局
         view = View.inflate(this, R.layout.toast_text_address, null);
+
+        //在这儿设置背景，根据存储的style样式更新背景
+        view.setBackgroundResource(bgs[style]);
         TextView tvText = (TextView) view.findViewById(R.id.tvNumber);
         //下面就把自己定义的toast显示在了window上
         tvText.setText(text);

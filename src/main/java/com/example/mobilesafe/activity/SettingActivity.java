@@ -1,5 +1,7 @@
 package com.example.mobilesafe.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 import com.example.mobilesafe.R;
 import com.example.mobilesafe.service.AddressService;
 import com.example.mobilesafe.utils.ServiceStateUtils;
+import com.example.mobilesafe.view.SettingClickView;
 import com.example.mobilesafe.view.SettingItemView;
 
 /**
@@ -20,14 +23,23 @@ public class SettingActivity extends AppCompatActivity {
     private TextView tvtitle;
     private TextView tvdesc;
     private SettingItemView siv_update,siv_address;
+    private SettingClickView scvStyle,scvLocation;
     private SharedPreferences mPrefs;
+    int style;
+    final String[]items = new String[]{"半透明","活力橙","卫士蓝","金属灰","苹果绿"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         mPrefs = getSharedPreferences("config", MODE_PRIVATE);
+        style = mPrefs.getInt("address_style", 0);  //读取保存的style
         initialize();
+        initAddressService();
+        initUpdate();
+        initAddressStyle();
+        initAddresssLocation();
     }
 
     /**
@@ -38,8 +50,6 @@ public class SettingActivity extends AppCompatActivity {
         tvdesc = (TextView) findViewById(R.id.tv_desc);
         siv_update = (SettingItemView) findViewById(R.id.siv_update);
         siv_address = (SettingItemView) findViewById(R.id.siv_address);
-        initAddressService();
-        initUpdate();
     }
 
     /**
@@ -90,12 +100,63 @@ public class SettingActivity extends AppCompatActivity {
                 if (siv_address.isChecked()){
                     siv_address.setChecked(false);
                     //停止归属地服务
-                    stopService(new Intent(SettingActivity.this,AddressService.class));
+                    stopService(new Intent(SettingActivity.this, AddressService.class));
                 } else {
                     siv_address.setChecked(true);
                     //开启归属地服务
                     startService(new Intent(SettingActivity.this, AddressService.class));
                 }
+            }
+        });
+    }
+
+    /**
+     * 修改提示框的显示风格
+     */
+    private void initAddressStyle(){
+        scvStyle = (SettingClickView) findViewById(R.id.scvStyle);
+        scvStyle.setTitle("归属地提示框风格");
+        scvStyle.setDesc(items[style]);
+        scvStyle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSingleChooseDialgo();
+            }
+        });
+    }
+
+    /**
+     * 弹出选择风格的单选框
+     */
+    private void showSingleChooseDialgo() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("归属地提示框风格");
+        builder.setIcon(R.mipmap.ic_launcher);
+
+
+        builder.setSingleChoiceItems(items, style, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mPrefs.edit().putInt("address_style", which).commit(); //保存选择的风格
+                scvStyle.setDesc(items[which]);  //更新组合控件的信息描述
+                dialog.dismiss();   //让dialog消失
+            }
+        });
+        builder.setNegativeButton("取消", null);
+        builder.show();
+    }
+
+    /**
+     * 修改归属地显示的位置
+     */
+    private void initAddresssLocation(){
+        scvLocation = (SettingClickView) findViewById(R.id.addressWhere);
+        scvLocation.setTitle("归属地提示框显示位置");
+        scvLocation.setDesc("设置归属地提示框的显示位置");
+        scvLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SettingActivity.this,DragViewActivity.class));
             }
         });
     }

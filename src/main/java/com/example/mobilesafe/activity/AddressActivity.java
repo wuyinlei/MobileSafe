@@ -34,7 +34,7 @@ public class AddressActivity extends AppCompatActivity {
 
         editNumber = (EditText) findViewById(R.id.editNumber);
 
-        //监听EditText的变化
+        //动态的监听EditText的变化
         editNumber.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -66,6 +66,7 @@ public class AddressActivity extends AppCompatActivity {
             String address = AddressDao.getAddress(number);
             tvResult.setText(address);
         } else {
+            //震动的动画
             Animation shake = AnimationUtils.loadAnimation(this,R.anim.shake);
             editNumber.startAnimation(shake);
             vibrate();

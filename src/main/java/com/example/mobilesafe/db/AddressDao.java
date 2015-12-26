@@ -24,6 +24,11 @@ public class AddressDao {
     public static String getAddress(String number) {
         String address = "未知号码";
         //拿到数据库对象
+        /**
+         * openDatabase()这个api只支持从他默认的路径下打开数据库文件，不支持直接打开assets目录下的文件
+         * 所以我们通过流的复制，把这个assets目录下的文件复制到了"data/data/com.example.mobilesafe/files"
+         * 这个目录下，以达到我们可以读取数据库文件
+         */
         SQLiteDatabase db = SQLiteDatabase.openDatabase(PATH, null, SQLiteDatabase.OPEN_READONLY);
 
         //分析输入的是否是手机号码，也就是用到了正则表达式
