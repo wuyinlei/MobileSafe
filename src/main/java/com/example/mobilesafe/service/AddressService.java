@@ -39,6 +39,9 @@ public class AddressService extends Service {
     WindowManager mWM;
     View view;
     OutCallReceiver receiver;
+    WindowManager.LayoutParams params;
+
+    private int startX, startY;
 
     private SharedPreferences mPres;
 
@@ -113,6 +116,8 @@ public class AddressService extends Service {
     }
 
     /**
+     * 需要以下的权限
+     * <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
      * 自定义归属地悬浮框，在Window级别上显示，就是在主屏中显示
      * 这个是我们根据toast的源码改变的，（因为toast可以在任何地方显示）
      */
@@ -121,11 +126,17 @@ public class AddressService extends Service {
         //可以在第三方app中弹出悬浮框   例如360的悬浮框
         //初始化WindowManager
         mWM = (WindowManager) this.getSystemService(WINDOW_SERVICE);
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+
+        //获取屏幕的宽高
+        final int width = mWM.getDefaultDisplay().getWidth();
+        final int height = mWM.getDefaultDisplay().getHeight();
+
+
+        params = new WindowManager.LayoutParams();
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
         params.width = WindowManager.LayoutParams.WRAP_CONTENT;
         params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-               // | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE   这个要去掉，否则不能响应我们的触摸事件
+                // | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE   这个要去掉，否则不能响应我们的触摸事件
                 | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
         params.format = PixelFormat.TRANSLUCENT;
         //电话窗口，用于电话交互
@@ -160,6 +171,68 @@ public class AddressService extends Service {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
 
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        //获取初始坐标
+                        startX = (int) event.getRawX();
+                        startY = (int) event.getRawY();
+
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        //获取移动后的坐标
+                        int endX = (int) event.getRawX();
+                        int endY = (int) event.getRawY();
+
+                        //计算偏移量
+                        int dx = endX - startX;
+                        int dy = endY - startY;
+
+                        //更新悬浮窗位置
+                        params.x += startX;
+                        params.y += startY;
+
+                        /**
+                         * 以下四个if判断是为了防止坐标偏移出屏幕
+                         * 原因解释，因为在window界面中，我们是可以随便移动的，就算屏幕没有
+                         * 那么大，但是他的x轴的坐标或者是y轴的坐标会一直增加，这个时候
+                         * 当我们进入我们的应用中的时候查找这个图标的时候是找不到的，因为已经
+                         * 跳离开了我们的屏幕，于是我们有了以下的四个逻辑判断
+                         */
+                        //防止坐标偏移出屏幕
+                        if (params.x < 0) {
+                            params.x = 0;
+                        }
+
+                        //防止坐标偏移出屏幕
+                        if (params.y < 0) {
+                            params.y = 0;
+                        }
+
+                        //防止坐标偏移出屏幕
+                        if (params.x > width - view.getWidth()) {
+                            params.x = width - view.getWidth();
+                        }
+
+                        //防止坐标偏移出屏幕
+                        if (params.y > height - view.getHeight()) {
+                            params.y = height - view.getHeight();
+                        }
+
+                        mWM.updateViewLayout(view, params);
+
+                        //重新初始化起点坐标
+                        startX = (int) event.getRawX();
+                        startY = (int) event.getRawY();
+
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        //记录抬起后的坐标点，然后我们保存并且记录，来让下一次重新进入的时候更新位置
+                        SharedPreferences.Editor edit = mPres.edit();
+                        edit.putInt("lastX", params.x);
+                        edit.putInt("lastY", params.y);
+                        edit.commit();
+                        break;
+                }
 
                 return true;
             }
