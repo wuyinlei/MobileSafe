@@ -36,5 +36,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <com.example.mobilesafe.view.SettingItemView
+        android:id="@+id/siv_callsafe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:desc_off="黑名单更新已关闭"
+        app:desc_on="黑名单更新已开启"
+        app:title_update="黑名单拦截设置" />
+
 
 </LinearLayout>

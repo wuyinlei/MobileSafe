@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.mobilesafe.R;
 import com.example.mobilesafe.service.AddressService;
+import com.example.mobilesafe.service.CallSafeService;
 import com.example.mobilesafe.utils.ServiceStateUtils;
 import com.example.mobilesafe.view.SettingClickView;
 import com.example.mobilesafe.view.SettingItemView;
@@ -22,7 +23,7 @@ public class SettingActivity extends AppCompatActivity {
 
     private TextView tvtitle;
     private TextView tvdesc;
-    private SettingItemView siv_update,siv_address;
+    private SettingItemView siv_update,siv_address,siv_callsafe;
     private SettingClickView scvStyle,scvLocation;
     private SharedPreferences mPrefs;
     int style;
@@ -40,6 +41,7 @@ public class SettingActivity extends AppCompatActivity {
         initUpdate();
         initAddressStyle();
         initAddresssLocation();
+        initCallSafe();
     }
 
     /**
@@ -50,6 +52,7 @@ public class SettingActivity extends AppCompatActivity {
         tvdesc = (TextView) findViewById(R.id.tv_desc);
         siv_update = (SettingItemView) findViewById(R.id.siv_update);
         siv_address = (SettingItemView) findViewById(R.id.siv_address);
+        siv_callsafe = (SettingItemView) findViewById(R.id.siv_callsafe);
     }
 
     /**
@@ -80,12 +83,43 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     /**
+     * 初始化黑名单服务
+     */
+    private void initCallSafe(){
+
+        //根据归属地服务是否运行来更新选择框
+        boolean serviceRunning = ServiceStateUtils.isServiceRunning(this, "com.example.mobilesafe.service.CallSafeService");
+
+        //判断该服务是否运行，如果没有运行，勾选框就会不勾选
+        if (serviceRunning){
+            siv_callsafe.setChecked(true);
+        } else {
+            siv_callsafe.setChecked(false);
+        }
+        siv_callsafe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (siv_callsafe.isChecked()){
+                    siv_callsafe.setChecked(false);
+                    //停止归属地服务
+                    stopService(new Intent(SettingActivity.this, CallSafeService.class));
+                } else {
+                    siv_callsafe.setChecked(true);
+                    //开启归属地服务
+                    startService(new Intent(SettingActivity.this, CallSafeService.class));
+                }
+            }
+        });
+    }
+
+    /**
      * 初始化电话号码归属地的显示的服务
      */
     private void initAddressService() {
 
         //根据归属地服务是否运行来更新选择框
-        boolean serviceRunning = ServiceStateUtils.isServiceRunning(this, "com.example.mobilesafe.service");
+        boolean serviceRunning = ServiceStateUtils.isServiceRunning(this, "com.example.mobilesafe.service.AddressService");
 
         //判断该服务是否运行，如果没有运行，勾选框就会不勾选
         if (serviceRunning){

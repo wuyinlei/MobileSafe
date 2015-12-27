@@ -167,10 +167,12 @@ public class CallSafeActivity extends AppCompatActivity {
                 //把电话号码和拦截模式添加到数据库
                 dao.insert(phoneNumber, mode);
 
+                //如果不做下面的判断的话，那么就会每次在更新加载数据的时候，显示的都是第一条数据
                 if(adapter == null){
                     adapter = new CallSafeAdapter(lists, CallSafeActivity.this);
                     listView.setAdapter(adapter);
                 }else{
+                    //在这如果有adapter不为空，那么直接改变位置
                     adapter.notifyDataSetChanged();
                 }
                 dialog.dismiss();

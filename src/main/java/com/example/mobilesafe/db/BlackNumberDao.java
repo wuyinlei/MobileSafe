@@ -81,6 +81,7 @@ public class BlackNumberDao {
 
     /**
      * 通过电话号码查找
+     * 查找到拦截的模式
      *
      * @return
      */

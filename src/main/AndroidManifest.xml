@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.mobilesafe" >
+    package="com.example.mobilesafe">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
@@ -19,10 +19,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".activity.SplashActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar" >
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,13 +37,13 @@
         <activity android:name=".activity.Setup3Activity" />
         <activity android:name=".activity.Setup4Activity" />
 
-        <receiver android:name=".receiver.BootCompleteReceiver" >
+        <receiver android:name=".receiver.BootCompleteReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.SmsReceiver" >
-            <intent-filter android:priority="214748367" >
+        <receiver android:name=".receiver.SmsReceiver">
+            <intent-filter android:priority="214748367">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
@@ -70,6 +70,11 @@
             android:name=".activity.DragViewActivity"
             android:theme="@style/Theme.AppCompat.Translucent.NoActionBar" />
         <activity android:name=".activity.CallSafeActivity" />
+
+        <service
+            android:name=".service.CallSafeService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
