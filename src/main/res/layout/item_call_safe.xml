@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/space_s"
+        android:text="15245625865"
+        android:textSize="@dimen/txt_l" />
+
+    <TextView
+        android:id="@+id/tvMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvNumber"
+        android:layout_marginTop="5dp"
+        android:padding="@dimen/space_s"
+        android:text="电话拦截"
+        android:textSize="@dimen/txt_l" />
+
+    <ImageView
+        android:id="@+id/delete"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@mipmap/ic_delete_btn" />
+</RelativeLayout>
