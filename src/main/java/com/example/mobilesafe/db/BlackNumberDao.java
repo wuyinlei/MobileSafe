@@ -8,7 +8,6 @@ import android.os.SystemClock;
 
 import com.example.mobilesafe.bean.BlackNumberInfo;
 
-import java.security.cert.CertificateParsingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,7 +123,7 @@ public class BlackNumberDao {
         }*/   //上面的这个是进行睡眠3秒，下面的源码里面已经实现了这个，所以用下面的更加方便
         //睡眠3秒
 
-        SystemClock.sleep(3000);
+        SystemClock.sleep(300);
         return numberInfo;
     }
 
@@ -151,7 +150,7 @@ public class BlackNumberDao {
         }
         cursor.close();
         db.close();
-        SystemClock.sleep(3000);
+        SystemClock.sleep(300);
         return infos;
     }
 
@@ -167,4 +166,33 @@ public class BlackNumberDao {
         db.close();
         return count;
     }
+
+
+    /**
+     * 分批加载数据
+     *
+     * @param startIndex    开始的位置
+     * @param maxCount     每一页展示的最大的数据
+     * @return
+     */
+    public List<BlackNumberInfo> findPage2(int startIndex, int maxCount) {
+
+        db = dbHelper.getWritableDatabase();
+        //limit   限制的意思  限制当前有多少数据   offset  是跳过的意思  从第几条开始
+        String sql = "select number,mode from " + TABLE_NAME + " limit ? offset ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(maxCount),
+                String.valueOf(startIndex)});
+        ArrayList<BlackNumberInfo> infos = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            BlackNumberInfo info = new BlackNumberInfo();
+            info.setNumber(cursor.getString(0));
+            info.setMode(cursor.getString(1));
+            infos.add(info);
+        }
+        cursor.close();
+        db.close();
+        SystemClock.sleep(300);
+        return infos;
+    }
+
 }
