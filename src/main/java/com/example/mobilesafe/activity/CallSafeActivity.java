@@ -1,5 +1,7 @@
 package com.example.mobilesafe.activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,7 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -47,6 +50,11 @@ public class CallSafeActivity extends AppCompatActivity {
      * 每页展示的最大的数量
      */
     private int maxCount = 20;
+    private EditText etphone;
+    private CheckBox cbphone;
+    private CheckBox cbsms;
+    private Button btnSure;
+    private Button btnCancel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +64,7 @@ public class CallSafeActivity extends AppCompatActivity {
         dao = new BlackNumberDao(this);
         initialize();
         initData();
+        initialize();
     }
 
 
@@ -117,6 +126,71 @@ public class CallSafeActivity extends AppCompatActivity {
     }
 
     /**
+     * 添加黑名单
+     *
+     * @param view
+     */
+    public void addBlackNumber(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View v = View.inflate(this, R.layout.add_black_number, null);
+        etphone = (EditText) v.findViewById(R.id.et_phone);
+        cbphone = (CheckBox) v.findViewById(R.id.cb_phone);
+        cbsms = (CheckBox) v.findViewById(R.id.cb_sms);
+        btnSure = (Button) v.findViewById(R.id.btnSure);
+        final AlertDialog dialog = builder.create();
+        btnSure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String phoneNumber = etphone.getText().toString().trim();
+                if (TextUtils.isEmpty(phoneNumber)) {
+                    Toast.makeText(CallSafeActivity.this, "请输入黑名单号码", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String mode = "";
+                if (cbphone.isChecked() && cbsms.isChecked()) {
+                    mode = "1";
+                } else if (cbphone.isChecked()) {
+                    mode = "2";
+                } else if (cbsms.isChecked()) {
+                    mode = "3";
+                } else {
+                    Toast.makeText(CallSafeActivity.this, "请选择拦截模式", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                BlackNumberInfo info = new BlackNumberInfo();
+                info.setNumber(phoneNumber);
+                info.setMode(mode);
+
+                //添加的时候把数据添加到第一条，这样方便我们查看是否添加成功，也可以用其他的方式来判断是否添加成功
+                lists.add(0,info);
+
+                //把电话号码和拦截模式添加到数据库
+                dao.insert(phoneNumber, mode);
+
+                if(adapter == null){
+                    adapter = new CallSafeAdapter(lists, CallSafeActivity.this);
+                    listView.setAdapter(adapter);
+                }else{
+                    adapter.notifyDataSetChanged();
+                }
+                dialog.dismiss();
+            }
+        });
+
+        btnCancel = (Button) v.findViewById(R.id.btnCancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setView(v);
+        dialog.show();
+    }
+
+
+    /**
      * 通过Handler异步通信，新开启子线程来查找数据（工作中的数据是很多的，如果在UI线程中更新的话会导致性能下降的）
      */
     private Handler mHandler = new Handler() {
@@ -163,6 +237,7 @@ public class CallSafeActivity extends AppCompatActivity {
         }.start();
 
     }
+
 
     private class CallSafeAdapter extends MyBaseAdapter<BlackNumberInfo> {
         public CallSafeAdapter(List lists, Context mContext) {
