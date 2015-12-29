@@ -74,7 +74,9 @@
         <service
             android:name=".service.CallSafeService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".activity.AppManagerActivity"></activity>
     </application>
 
 </manifest>
