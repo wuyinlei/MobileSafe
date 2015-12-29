@@ -1,19 +1,34 @@
 package com.example.mobilesafe.activity;
 
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.example.mobilesafe.R;
@@ -22,13 +37,18 @@ import com.example.mobilesafe.engine.AppInfos;
 
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
-public class AppManagerActivity extends AppCompatActivity {
+public class AppManagerActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView tvRom;
     private TextView tvSdk;
     private ListView listview;
+    private TextView tv_app;
+    private LinearLayout ll_uninstall, ll_run, ll_share,ll_detail;
+    private APPinfo clickAppInfo;
+    private UninstallReceiver uninstallReceiver;
 
     /**
      * rom的剩余空间
@@ -54,6 +74,8 @@ public class AppManagerActivity extends AppCompatActivity {
      * 系統程序的集合
      */
     private ArrayList<APPinfo> systemAppInfos;
+    private PopupWindow popupWindow;
+    private Object obj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +94,8 @@ public class AppManagerActivity extends AppCompatActivity {
         tvRom = (TextView) findViewById(R.id.tvRom);
         tvSdk = (TextView) findViewById(R.id.tvSdk);
         listview = (ListView) findViewById(R.id.list_view);
+        tv_app = (TextView) findViewById(R.id.tv_app);
+
     }
 
     /**
@@ -90,6 +114,111 @@ public class AppManagerActivity extends AppCompatActivity {
         userAppInfos = new ArrayList<>();
         systemAppInfos = new ArrayList<>();
 
+        //设置ListView的滚动状态
+        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            /**
+             *                          在这实现了在滑动的时候，判断当前的ListView是属于
+             *                          系统应用程序还是用户应用程序的，如果是系统应用程序的
+             *                          就显示系统应用程序（X个）   否则就显示用户程序（X个）
+             * @param view
+             * @param firstVisibleItem   第一个可见的条目的位置
+             * @param visibleItemCount   一页可以展示的多少个条目
+             * @param totalItemCount     总共的Item的个数
+             */
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+                //在滚动的时候也要消失窗口
+                popupWindowDismiss();
+
+                if (userAppInfos != null && systemAppInfos != null) {
+                    if (firstVisibleItem > userAppInfos.size() + 1) {
+                        //系统应用程序
+                        tv_app.setText("系统程序(" + systemAppInfos.size() + "个)");
+                    } else {
+                        //用户应用程序
+                        tv_app.setText("用户程序(" + userAppInfos.size() + "个)");
+                    }
+                }
+            }
+        });
+
+        /**
+         * 设置ListView的点击监听事件
+         */
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //获取到当前点击的Item的对象
+                obj = listview.getItemAtPosition(position);
+                if (obj != null && obj instanceof APPinfo) {
+                    clickAppInfo = (APPinfo) obj;
+                    View contentView = View.inflate(AppManagerActivity.this, R.layout.popup_item, null);
+                    //-2 表示包裹内容   也就wrap_content的一个值
+                    /**
+                     * <p>A popup window that can be used to display an arbitrary view. The popup
+                     * window is a floating container that appears on top of the current
+                     * activity.</p>
+                     *
+                     * @see android.widget.AutoCompleteTextView
+                     * @see android.widget.Spinner
+                     */
+
+                    popupWindowDismiss();
+
+                    ll_uninstall = (LinearLayout) contentView.findViewById(R.id.ll_uninstall);
+                    ll_uninstall.setOnClickListener(AppManagerActivity.this);
+                    ll_run = (LinearLayout) contentView.findViewById(R.id.ll_run);
+                    ll_run.setOnClickListener(AppManagerActivity.this);
+                    ll_share = (LinearLayout) contentView.findViewById(R.id.ll_share);
+                    ll_share.setOnClickListener(AppManagerActivity.this);
+                    ll_detail = (LinearLayout) contentView.findViewById(R.id.ll_detail);
+                    ll_detail.setOnClickListener(AppManagerActivity.this);
+
+                    popupWindow = new PopupWindow(contentView, -2, -2);
+                    //使用当前的PopupWindow，必须设置背景，要不然没有动画
+                    //需要注意：使用PopupWindow 必须设置背景。不然没有动画
+                    popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); //
+                    int[] location = new int[2];
+                    //获取到view展示在窗体上面的位置
+                    view.getLocationInWindow(location);
+
+                    popupWindow.showAtLocation(parent, Gravity.LEFT + Gravity.TOP, 90, location[1]);
+
+                    //得到一个缩放的动画
+                    ScaleAnimation sa = new ScaleAnimation(0.5f, 1.0f, 0.5f, 1.0f,
+                            Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                    sa.setDuration(3000);
+
+                    contentView.startAnimation(sa);
+                }
+
+
+            }
+        });
+
+        uninstallReceiver = new UninstallReceiver();
+
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilter.addDataScheme("package");
+        registerReceiver(uninstallReceiver,intentFilter);
+
+    }
+
+    /**
+     * 在点击的时候判断是否有窗口在显示，如果有显示就dismiss掉
+     */
+    private void popupWindowDismiss() {
+
+        if (popupWindow != null && popupWindow.isShowing()) {
+            popupWindow.dismiss();
+            popupWindow = null;
+        }
     }
 
     /**
@@ -135,6 +264,53 @@ public class AppManagerActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            /**
+             * 卸载
+             */
+            case R.id.ll_uninstall:
+                Intent uninstall_localIntent = new Intent("android.intent.action.DELETE", Uri.parse("package:" + clickAppInfo.getApkPageName()));
+                startActivity(uninstall_localIntent);
+                popupWindowDismiss();
+                break;
+
+            /**
+             * 运行
+             */
+            case R.id.ll_run:
+                Intent localIntent = getPackageManager().getLaunchIntentForPackage(clickAppInfo.getApkPageName());
+                this.startActivity(localIntent);
+                popupWindowDismiss();
+                break;
+
+            /**
+             * 分享
+             */
+            case R.id.ll_share:
+                Intent shareIntent = new Intent("android.intent.action.SEND");
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra("android.intent.extra.SUBJECT", "f分享");
+                shareIntent.putExtra("android.intent.extra.TEXT", "Hi！推荐您使用软件：" + clickAppInfo.getApkName() + "下载地址:"+"https://play.google.com/store/apps/details?id="+clickAppInfo.getApkPageName());
+                this.startActivity(shareIntent);
+                popupWindowDismiss();
+                break;
+
+            /**
+             * 详情
+             */
+            case R.id.ll_detail:
+                Intent detail_intent = new Intent();
+                detail_intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                detail_intent.addCategory(Intent.CATEGORY_DEFAULT);
+                detail_intent.setData(Uri.parse("package:" + clickAppInfo.getApkPageName()));
+                startActivity(detail_intent);
+                popupWindowDismiss();
+                break;
+        }
+    }
+
 
     /**
      * ListView的适配器
@@ -150,7 +326,24 @@ public class AppManagerActivity extends AppCompatActivity {
 
         @Override
         public Object getItem(int position) {
-            return appInfos.get(position);
+
+            if (position == 0) {
+                return null;
+            } else if (position == userAppInfos.size() + 1) {
+                return null;
+            }
+
+            APPinfo apPinfo;
+
+            if (position < userAppInfos.size() + 1) {
+                //減去多出來的特殊的條目
+                apPinfo = userAppInfos.get(position - 1);
+            } else {
+                int location = 1 + userAppInfos.size() + 1;
+                apPinfo = systemAppInfos.get(position - location);
+            }
+
+            return apPinfo;
         }
 
         @Override
@@ -248,5 +441,25 @@ public class AppManagerActivity extends AppCompatActivity {
             private ImageView iv_icon;
             private TextView tvName, tvLocal, tvSize;
         }
+    }
+
+
+
+    private class UninstallReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d("UninstallReceiver", "接收到卸载的广播");
+           // initData();
+        }
+    }
+
+    /**
+     * 在後退的時候刪除彈出的窗體
+     */
+    @Override
+    protected void onDestroy() {
+        popupWindowDismiss();
+        super.onDestroy();
     }
 }

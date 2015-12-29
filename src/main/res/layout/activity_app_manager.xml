@@ -31,8 +31,22 @@
             android:layout_height="wrap_content" />
 
     </LinearLayout>
-    <include
-        android:id="@+id/list_view"
-        layout="@layout/list_view_safe"></include>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            android:id="@+id/list_view"
+            layout="@layout/list_view_safe"/>
+        <TextView
+            android:id="@+id/tv_app"
+            android:text="用户程序(个)"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_l"
+            android:background="@color/grey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
 
 </LinearLayout>
