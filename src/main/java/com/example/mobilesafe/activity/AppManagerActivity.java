@@ -450,7 +450,7 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("UninstallReceiver", "接收到卸载的广播");
-           // initData();
+            initData();
         }
     }
 
