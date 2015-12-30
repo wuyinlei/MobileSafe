@@ -37,8 +37,10 @@ public class AppInfos {
         //获取到整个安装到手机上的安装包
         List<PackageInfo> installedPackages = packageManager.getInstalledPackages(0);
 
+        //迭代集合
         for (PackageInfo installedPackage : installedPackages) {
 
+            //先创建一个Appinfo对象
             APPinfo apPinfo = new APPinfo();
 
             //获取到应用程序的图标

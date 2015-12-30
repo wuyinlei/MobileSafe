@@ -46,7 +46,7 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
     private TextView tvSdk;
     private ListView listview;
     private TextView tv_app;
-    private LinearLayout ll_uninstall, ll_run, ll_share,ll_detail;
+    private LinearLayout ll_uninstall, ll_run, ll_share, ll_detail;
     private APPinfo clickAppInfo;
     private UninstallReceiver uninstallReceiver;
 
@@ -102,8 +102,10 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
      * 初始化数据
      */
     private void initData() {
+
         //获取到运行的剩余空间
         romFreeSpace = Environment.getDataDirectory().getFreeSpace();
+
         //获取到额外的剩余空间  SD卡
         sdFreeSpace = Environment.getExternalStorageDirectory().getFreeSpace();
 
@@ -193,9 +195,11 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
                     //得到一个缩放的动画
                     ScaleAnimation sa = new ScaleAnimation(0.5f, 1.0f, 0.5f, 1.0f,
                             Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                    sa.setDuration(3000);
+                    sa.setDuration(1000);
 
+                    AlphaAnimation aa = new AlphaAnimation(0, 1);
                     contentView.startAnimation(sa);
+                    contentView.startAnimation(aa);
                 }
 
 
@@ -206,7 +210,7 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
 
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_REMOVED);
         intentFilter.addDataScheme("package");
-        registerReceiver(uninstallReceiver,intentFilter);
+        registerReceiver(uninstallReceiver, intentFilter);
 
     }
 
@@ -271,44 +275,72 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
              * 卸载
              */
             case R.id.ll_uninstall:
-                Intent uninstall_localIntent = new Intent("android.intent.action.DELETE", Uri.parse("package:" + clickAppInfo.getApkPageName()));
-                startActivity(uninstall_localIntent);
-                popupWindowDismiss();
+                AppUninstall();
                 break;
 
             /**
              * 运行
              */
             case R.id.ll_run:
-                Intent localIntent = getPackageManager().getLaunchIntentForPackage(clickAppInfo.getApkPageName());
-                this.startActivity(localIntent);
-                popupWindowDismiss();
+                AppRun();
                 break;
 
             /**
              * 分享
              */
             case R.id.ll_share:
-                Intent shareIntent = new Intent("android.intent.action.SEND");
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra("android.intent.extra.SUBJECT", "f分享");
-                shareIntent.putExtra("android.intent.extra.TEXT", "Hi！推荐您使用软件：" + clickAppInfo.getApkName() + "下载地址:"+"https://play.google.com/store/apps/details?id="+clickAppInfo.getApkPageName());
-                this.startActivity(shareIntent);
-                popupWindowDismiss();
+                AppShare();
                 break;
 
             /**
              * 详情
              */
             case R.id.ll_detail:
-                Intent detail_intent = new Intent();
-                detail_intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-                detail_intent.addCategory(Intent.CATEGORY_DEFAULT);
-                detail_intent.setData(Uri.parse("package:" + clickAppInfo.getApkPageName()));
-                startActivity(detail_intent);
-                popupWindowDismiss();
+                AppDetail();
                 break;
         }
+    }
+
+    /**
+     * 卸载程序的功能，触及到这个方法的时候，会去卸载改程序
+     */
+    private void AppUninstall() {
+        Intent uninstall_localIntent = new Intent("android.intent.action.DELETE", Uri.parse("package:" + clickAppInfo.getApkPageName()));
+        startActivity(uninstall_localIntent);
+        popupWindowDismiss();
+    }
+
+    /**
+     * 程序运行方法
+     */
+    private void AppRun() {
+        Intent localIntent = getPackageManager().getLaunchIntentForPackage(clickAppInfo.getApkPageName());
+        this.startActivity(localIntent);
+        popupWindowDismiss();
+    }
+
+    /**
+     * 应用程序分享页面，当触及这个功能的时候，会调用系统的短信功能或者蓝牙功能，来实现分享app功能
+     */
+    private void AppShare() {
+        Intent shareIntent = new Intent("android.intent.action.SEND");
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra("android.intent.extra.SUBJECT", "f分享");
+        shareIntent.putExtra("android.intent.extra.TEXT", "Hi！推荐您使用软件：" + clickAppInfo.getApkName() + "下载地址:" + "https://play.google.com/store/apps/details?id=" + clickAppInfo.getApkPageName());
+        this.startActivity(shareIntent);
+        popupWindowDismiss();
+    }
+
+    /**
+     * 应用程序详情页面
+     */
+    private void AppDetail() {
+        Intent detail_intent = new Intent();
+        detail_intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+        detail_intent.addCategory(Intent.CATEGORY_DEFAULT);
+        detail_intent.setData(Uri.parse("package:" + clickAppInfo.getApkPageName()));
+        startActivity(detail_intent);
+        popupWindowDismiss();
     }
 
 
@@ -327,6 +359,19 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
         @Override
         public Object getItem(int position) {
 
+            /**
+             * 用下面的代码，来返回一个APPinfo对象，也就是返回的你要当前你要点击的item
+             *
+             * 因为接下来我们要使用popupWindow在点击item的时候，弹出popupWindow窗口
+             *
+             * 以实现我们的对程序的运行、卸载、详情、分享等功能
+             *
+             * 因为这个地方我们加入了两个特殊的条目，所以我们要做一下处理，以防止返回的都是一些我们
+             *
+             * 需要的数据，如果我们没有加入特殊的条目，就是一些基础的条目，我们可以直接
+             *
+             * return appInfos.get(position);
+             */
             if (position == 0) {
                 return null;
             } else if (position == userAppInfos.size() + 1) {
@@ -444,12 +489,11 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
     }
 
 
-
-    private class UninstallReceiver extends BroadcastReceiver{
+    private class UninstallReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("UninstallReceiver", "接收到卸载的广播");
+            // Log.d("UninstallReceiver", "接收到卸载的广播");
             initData();
         }
     }

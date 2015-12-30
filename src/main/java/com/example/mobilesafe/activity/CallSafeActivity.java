@@ -292,10 +292,9 @@ public class CallSafeActivity extends AppCompatActivity {
             return convertView;
         }
 
-
     }
 
-    static class ViewHolder {
+    class ViewHolder {
         private TextView tvNumber;
         private TextView tvMode;
         private ImageView delete;

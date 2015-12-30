@@ -20,4 +20,18 @@
         android:padding="@dimen/space_s"
         android:text="电话归属地查询"
         android:textSize="@dimen/txt_l" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/text_selector_button"
+        android:clickable="true"
+        android:drawableLeft="@android:drawable/ic_menu_camera"
+        android:drawablePadding="5dp"
+        android:gravity="center_vertical"
+        android:onClick="backUpSms"
+        android:padding="@dimen/space_s"
+        android:text="短信备份"
+        android:textSize="@dimen/txt_l" />
 </LinearLayout>

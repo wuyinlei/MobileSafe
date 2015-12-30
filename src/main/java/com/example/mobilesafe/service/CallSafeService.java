@@ -60,12 +60,14 @@ public class CallSafeService extends Service {
         public void onCallStateChanged(int state, String incomingNumber) {
             super.onCallStateChanged(state, incomingNumber);
             switch (state){
+                case TelephonyManager.CALL_STATE_IDLE:
+                    //电话空闲状态
+                    break;
                 case TelephonyManager.CALL_STATE_RINGING:
                     //电话铃响
 
                     String mode = dao.findNumber(incomingNumber);
                     if (mode.equals("1") || mode.equals("2")){
-
                         //得到uri
                         Uri uri= Uri.parse("content://call_log/calls");
                         getContentResolver().registerContentObserver(uri,true,new MyContentObserver(new Handler(),incomingNumber));
@@ -73,7 +75,9 @@ public class CallSafeService extends Service {
                         //挂断电话
                         endCall();
                     }
-
+                    break;
+                case TelephonyManager.CALL_STATE_OFFHOOK:
+                    //电话接起状态
                     break;
 
             }
@@ -138,6 +142,9 @@ public class CallSafeService extends Service {
         }
     }
 
+    /**
+     * 检测短信的广播
+     */
     private class InnerReceive extends BroadcastReceiver {
 
         //在这里就可以接受短信了
