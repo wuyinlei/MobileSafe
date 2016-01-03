@@ -20,7 +20,10 @@ import com.example.mobilesafe.utils.MD5Utils;
 
 /**
  * Created by 若兰 on 2015/12/23.
+ *
+ * 程序主界面
  */
+
 public class HomeActivity extends AppCompatActivity {
 
     private SharedPreferences mPref;
@@ -56,10 +59,10 @@ public class HomeActivity extends AppCompatActivity {
                         startActivity(new Intent(HomeActivity.this, CallSafeActivity.class));
                         break;
                     case 2:
-                        startActivity(new Intent(HomeActivity.this,AppManagerActivity.class));
+                        startActivity(new Intent(HomeActivity.this, AppManagerActivity.class));
                         break;
                     case 7:
-                        startActivity(new Intent(HomeActivity.this,AToolsActivity.class));
+                        startActivity(new Intent(HomeActivity.this, AToolsActivity.class));
                         break;
                     case 8:
                         startActivity(new Intent(HomeActivity.this, SettingActivity.class));

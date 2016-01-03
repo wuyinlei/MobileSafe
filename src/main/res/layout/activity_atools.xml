@@ -34,4 +34,10 @@
         android:padding="@dimen/space_s"
         android:text="短信备份"
         android:textSize="@dimen/txt_l" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>

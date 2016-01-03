@@ -1,12 +1,15 @@
 package com.example.mobilesafe.utils;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -28,7 +31,17 @@ import java.io.FileOutputStream;
 
 public class SMSUtils {
 
-    public static boolean backUpSms(Context context){
+    /**
+     * 备份短信的接口
+     */
+    public interface BackUpCallbackSms{
+        //备份短信之前，告诉有多少条短信
+        public void before(int count);
+
+        public void onBackUpSms(int process);
+    }
+
+    public static boolean backUpSms(Context context,BackUpCallbackSms callback){
 
         /**
          * 目的：备份短信
@@ -62,6 +75,15 @@ public class SMSUtils {
             Cursor cursor = resolver.query(uri, new String[]{"address", "date", "type", "body"},
                     null, null, null);
 
+            //获取当前有多少条短信
+            int count = cursor.getCount();
+
+            //设置pd的最大值
+           callback.before(count);
+
+            //设置进度条，默认的是0
+            int progress = 0;
+
 
             //写文件
             try {
@@ -82,6 +104,8 @@ public class SMSUtils {
 
                 //设置开始的节点，第一个参数是命名空间，第二个参数是节点的名字
                 serializer.startTag(null, "smss");
+                //设置smss节点上面的属性值
+                serializer.attribute(null,"size",String.valueOf(count));
 
 
                 /**
@@ -98,6 +122,7 @@ public class SMSUtils {
                     serializer.startTag(null, "address");
                     //设置文本的内容
                     serializer.text(cursor.getString(0));
+
                     serializer.endTag(null, "address");
 
 
@@ -117,18 +142,29 @@ public class SMSUtils {
                     serializer.endTag(null, "body");
 
 
-                    serializer.endTag(null,"sms");
+                    serializer.endTag(null, "sms");
 
-                    Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show();
+                    progress++;
+
+                    //序列完，也就是备份完一条短信后，进度条加一
+                    callback.onBackUpSms(progress);
+                    SystemClock.sleep(200);
                 }
 
+                cursor.close();
 
                 //设置结束的节点，第一个参数是命名空间，第二个参数是节点的名字
-                serializer.endTag(null,"smss");
+                serializer.endTag(null, "smss");
 
 
                 //结束
                 serializer.endDocument();
+
+                os.flush();
+                os.close();
+
+                return true;
+
 
 
             } catch (Exception e) {

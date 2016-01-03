@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
+/**
+ * 联系人
+ */
 public class ContactActivity extends AppCompatActivity {
 
     private ListView lvList;

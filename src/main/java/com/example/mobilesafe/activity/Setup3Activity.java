@@ -11,6 +11,9 @@ import android.widget.Toast;
 
 import com.example.mobilesafe.R;
 
+/**
+ * 第三个引导页
+ */
 public class Setup3Activity extends BaseSetupActivity {
 
     private EditText editPhone;

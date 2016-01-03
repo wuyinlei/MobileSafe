@@ -11,7 +11,6 @@ package com.example.mobilesafe.db;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
 
 /**
  * 归属地查询数据库

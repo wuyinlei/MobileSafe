@@ -18,6 +18,8 @@ import com.example.mobilesafe.view.SettingItemView;
 
 /**
  * Created by 若兰 on 2015/12/23.
+ *
+ * 设置界面
  */
 public class SettingActivity extends AppCompatActivity {
 

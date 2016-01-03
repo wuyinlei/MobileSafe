@@ -1,22 +1,22 @@
 package com.example.mobilesafe.activity;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mobilesafe.R;
 
 import java.lang.reflect.Field;
 
+/**
+ * 绘制桌面图标View
+ */
 public class DragViewActivity extends AppCompatActivity {
 
     //sbar为状态栏的高度

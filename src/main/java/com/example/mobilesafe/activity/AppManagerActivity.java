@@ -40,6 +40,9 @@ import java.util.Formatter;
 import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
+/**
+ * 手机应用管理
+ */
 public class AppManagerActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView tvRom;

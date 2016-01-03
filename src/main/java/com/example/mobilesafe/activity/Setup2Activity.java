@@ -10,6 +10,9 @@ import android.widget.Toast;
 import com.example.mobilesafe.R;
 import com.example.mobilesafe.view.SettingItemView;
 
+/**
+ * 第二个引导页
+ */
 public class Setup2Activity extends BaseSetupActivity {
 
 

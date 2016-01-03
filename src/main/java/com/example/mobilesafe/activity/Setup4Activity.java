@@ -8,6 +8,9 @@ import android.widget.CompoundButton;
 
 import com.example.mobilesafe.R;
 
+/**
+ * 第四个引导页
+ */
 public class Setup4Activity extends BaseSetupActivity {
 
     private SharedPreferences mPres;

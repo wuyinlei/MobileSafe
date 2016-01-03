@@ -29,6 +29,9 @@ import com.example.mobilesafe.db.BlackNumberDao;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 黑名单管理
+ */
 public class CallSafeActivity extends AppCompatActivity {
 
     private ListView listView;

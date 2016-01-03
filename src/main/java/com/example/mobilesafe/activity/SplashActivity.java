@@ -22,6 +22,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * 闪屏页面，也就是刚下载程序后的初始化界面
+ */
 public class SplashActivity extends AppCompatActivity implements View.OnClickListener {
 
     private RelativeLayout rlRoot;
