@@ -100,9 +100,7 @@ public class SystemInfoUtils {
          *
          * 也就是说不能再API 16以下的手机上运用
          */
-        //String totalMem = Formatter.formatFileSize(TaskManagerActivity.this,memoryInfo.totalMem);
 
-        long total = 0;
 
         try {
             //  /proc/meminfo  配置文件的路径
@@ -119,11 +117,13 @@ public class SystemInfoUtils {
                 }
             }
 
-            total = Long.parseLong(sb.toString()) * 1024;
+            return Long.parseLong(sb.toString()) * 1024;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return total;
+        return 0;
     }
+
+
 }
