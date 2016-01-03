@@ -134,11 +134,12 @@ public class SMSUtils {
                     serializer.startTag(null, "type");
                     //设置文本的内容
                     serializer.text(cursor.getString(2));
-                    serializer.endTag(null,"type");
+                    serializer.endTag(null, "type");
 
-                    serializer.startTag(null,"body");
+                    serializer.startTag(null, "body");
                     //设置文本的内容
-                    serializer.text(cursor.getString(3 ));
+                    //读取短信的内容    "123"   加密的秘钥
+                    serializer.text(Crypto.encrypt("123", cursor.getString(3)));
                     serializer.endTag(null, "body");
 
 

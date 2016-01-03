@@ -18,9 +18,10 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
-    <uses-permission android:name="android.permission.READ_SMS"/>
-    <uses-permission android:name="android.permission.WRITE_SMS"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 
     <application
         android:allowBackup="true"
@@ -37,7 +38,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.HomeActivity" />
+        <!-- 首页 -->
+        <activity android:name=".activity.HomeActivity">
+            <intent-filter>
+                <action android:name="aaa" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".activity.SettingActivity" />
         <activity android:name=".activity.LostFoubdActivity" />
         <activity android:name=".activity.Setup1Activity" />
@@ -84,7 +92,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".activity.AppManagerActivity"></activity>
+        <activity android:name=".activity.AppManagerActivity" />
+        <activity android:name=".activity.TaskManagerActivity"></activity>
     </application>
 
 </manifest>

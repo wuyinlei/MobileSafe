@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.example.mobilesafe.R;
 import com.example.mobilesafe.service.AddressService;
 import com.example.mobilesafe.service.CallSafeService;
-import com.example.mobilesafe.utils.ServiceStateUtils;
+import com.example.mobilesafe.utils.SystemInfoUtils;
 import com.example.mobilesafe.view.SettingClickView;
 import com.example.mobilesafe.view.SettingItemView;
 
@@ -90,7 +90,7 @@ public class SettingActivity extends AppCompatActivity {
     private void initCallSafe(){
 
         //根据归属地服务是否运行来更新选择框
-        boolean serviceRunning = ServiceStateUtils.isServiceRunning(this, "com.example.mobilesafe.service.CallSafeService");
+        boolean serviceRunning = SystemInfoUtils.isServiceRunning(this, "com.example.mobilesafe.service.CallSafeService");
 
         //判断该服务是否运行，如果没有运行，勾选框就会不勾选
         if (serviceRunning){
@@ -121,7 +121,7 @@ public class SettingActivity extends AppCompatActivity {
     private void initAddressService() {
 
         //根据归属地服务是否运行来更新选择框
-        boolean serviceRunning = ServiceStateUtils.isServiceRunning(this, "com.example.mobilesafe.service.AddressService");
+        boolean serviceRunning = SystemInfoUtils.isServiceRunning(this, "com.example.mobilesafe.service.AddressService");
 
         //判断该服务是否运行，如果没有运行，勾选框就会不勾选
         if (serviceRunning){
