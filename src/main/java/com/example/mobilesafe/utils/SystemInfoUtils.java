@@ -79,7 +79,7 @@ public class SystemInfoUtils {
         activityManager.getMemoryInfo(memoryInfo);
 
         //获取到剩余内存
-        String availMem = Formatter.formatFileSize(context, memoryInfo.availMem).substring(0, 4);
+        String availMem = Formatter.formatFileSize(context, memoryInfo.availMem);
 
         return availMem;
     }

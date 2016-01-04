@@ -183,7 +183,7 @@ public class TaskManagerActivity extends AppCompatActivity {
         //获取到剩余内存
         availMem = Formatter.formatFileSize(TaskManagerActivity.this, memoryInfo.availMem).substring(0, 4);
 */
-        availMem = SystemInfoUtils.getAvailMem(this);
+        availMem = SystemInfoUtils.getAvailMem(this).substring(0,4);
         //获取到总的内存
        /* *//**
          * 这个是api 16及以上的使用的

@@ -23,33 +23,33 @@ public class MyWidgerProvider extends AppWidgetProvider {
      * 第一次创建的时候才会去创建
      * @param context
      * @param intent
-     */
+     *//*
     @Override
     public void onReceive(Context context, Intent intent) {
 
     }
-
-    /**
+*/
+   /* *//**
      * 每次有新的桌面小控件生成的时候都会去创建
      * @param context
      * @param appWidgetManager
      * @param appWidgetIds
-     */
+     *//*
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
-
-    /**
+*/
+   /* *//**
      * 每次删除桌面小控件的时候都会去掉用
      * @param context
      * @param appWidgetIds
-     */
+     *//*
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
         super.onDeleted(context, appWidgetIds);
     }
-
+*/
     /**
      * 第一次创建的时候才会调用此生命周期的方法
      *
