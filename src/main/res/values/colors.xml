@@ -9,5 +9,6 @@
     <color name="shallow_green">#99CC33</color>
     <color name="white_grey">#2000</color>
     <color name="red_white">#66FF6600</color>
+    <color name="textColorPrimaryDark">#ff000000</color>
     <color name="translucent">#A000</color>
 </resources>
