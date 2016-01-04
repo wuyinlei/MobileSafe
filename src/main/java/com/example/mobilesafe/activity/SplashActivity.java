@@ -49,7 +49,11 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         mPres = getSharedPreferences("config", MODE_PRIVATE);
+        //copy地址数据库
         copyDB("address.db");
+
+        //copy病毒数据库
+        copyDB("antivirus.db");
 
         createShortcut();
 

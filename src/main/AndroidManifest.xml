@@ -113,19 +113,20 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/app_widget_info" />
         </receiver>
-        
-        <!--清理说有的进程-->
+
+        <!-- 清理说有的进程 -->
         <receiver android:name=".receiver.KillProcessAllReceiver">
             <intent-filter>
-                <action android:name="com.example.mobilesafe"/>
+                <action android:name="com.example.mobilesafe" />
             </intent-filter>
         </receiver>
-
 
         <service
             android:name=".service.KillProcessWidgetService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".activity.AntivirusActivity"></activity>
     </application>
 
 </manifest>
