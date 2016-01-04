@@ -64,7 +64,7 @@ public class TaskInfoParser {
                 //获取到总共弄脏了多少内存(也就是当前应用程序占用了多少内存)
                 //int totalPrivateDirty = memoryInfo[0].getTotalPrivateDirty() * 1024;
 
-                Formatter.formatFileSize(context,totalPrivateDirty);
+                Formatter.formatFileSize(context, totalPrivateDirty);
 
                 //获取到进程的名字
                 String processName = runprocessInfo.processName;
@@ -93,14 +93,16 @@ public class TaskInfoParser {
                     taskInfo.setUserApp(true);
                 }
 
-                taskInfos.add(taskInfo);
+                //taskInfos.add(taskInfo);
 
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
                 //有的系统应用核心库里面，有些进程没有图标，要给一个默认的
-                taskInfo.setAppName("");
+                //在这里我们要给包名赋值，要不然我们用到的时候，如果没有给包名赋值，就会出现空指针异常
+                taskInfo.setPackageName(runprocessInfo.processName);
                 taskInfo.setIcon(context.getResources().getDrawable(R.mipmap.ic_launcher));
             }
+            taskInfos.add(taskInfo);
         }
         return taskInfos;
     }

@@ -9,8 +9,9 @@
         android:text="进程管理" />
 
     <LinearLayout
+        android:background="@mipmap/button_normal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="22dp"
         android:orientation="horizontal">
 
         <TextView
@@ -79,7 +80,7 @@
             android:layout_weight="1"
             android:background="@drawable/btn_selector_green"
             android:text="设置"
-            android:onClick="setApp"
+            android:onClick="openSetting"
             android:textSize="@dimen/txt_m" />
 
 
