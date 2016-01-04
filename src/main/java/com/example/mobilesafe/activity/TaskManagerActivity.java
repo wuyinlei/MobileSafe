@@ -1,25 +1,31 @@
 package com.example.mobilesafe.activity;
 
+import android.app.ActivityManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.Formatter;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mobilesafe.R;
-import com.example.mobilesafe.bean.APPinfo;
 import com.example.mobilesafe.bean.TaskInfo;
 import com.example.mobilesafe.engine.TaskInfoParser;
 import com.example.mobilesafe.utils.SystemInfoUtils;
+import com.example.mobilesafe.utils.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TaskManagerActivity extends AppCompatActivity {
 
@@ -45,12 +51,15 @@ public class TaskManagerActivity extends AppCompatActivity {
      */
     private ArrayList<TaskInfo> systemTaskInfos;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_manager);
+        taskManagerAdapter = new TaskManagerAdapter();
         initialize();
         initData();
+        initialize();
     }
 
 
@@ -62,6 +71,8 @@ public class TaskManagerActivity extends AppCompatActivity {
         tvtaskprocesscount = (TextView) findViewById(R.id.tv_task_process_count);
         tvtaskmemory = (TextView) findViewById(R.id.tv_task_memory);
         listview = (ListView) findViewById(R.id.list_view);
+
+
     }
 
 
@@ -95,9 +106,9 @@ public class TaskManagerActivity extends AppCompatActivity {
 
                 userTaskInfos = new ArrayList<>();
                 systemTaskInfos = new ArrayList<>();
-                for (TaskInfo taskInfo:taskInfos) {
+                for (TaskInfo taskInfo : taskInfos) {
                     //对所有的进程进行拆分，得到用户进程和系统进程
-                    if (taskInfo.isUserApp()){
+                    if (taskInfo.isUserApp()) {
                         userTaskInfos.add(taskInfo);
                     } else {
                         systemTaskInfos.add(taskInfo);
@@ -108,8 +119,14 @@ public class TaskManagerActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        taskManagerAdapter = new TaskManagerAdapter();
+
                         listview.setAdapter(taskManagerAdapter);
+                        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                            }
+                        });
                     }
                 });
             }
@@ -186,22 +203,158 @@ public class TaskManagerActivity extends AppCompatActivity {
         tvtaskmemory.setText("剩余/总内存 : " + availMem + "/" + totalMem);
     }
 
+    /**
+     * 全选
+     *
+     * @param view
+     */
+    public void selectAll(View view) {
 
-    private class TaskManagerAdapter extends BaseAdapter {
+        for (TaskInfo taskInfo : userTaskInfos) {
+
+            //判断当前的用户程序是否是自己的程序，如果是自己的程序，就把文本框隐藏了
+            if (taskInfo.getPackageName().equals(getPackageName())){
+                continue;
+            }
+
+            taskInfo.setChecked(true);
+        }
+        for (TaskInfo taskInfo : systemTaskInfos) {
+            taskInfo.setChecked(true);
+        }
+        //对当前的额list进行刷新，要不然只能在次进去的时候才能看到结果
+        taskManagerAdapter.notifyDataSetChanged();
+
+    }
+
+    /**
+     * 反选
+     *
+     * @param view
+     */
+    public void selectNone(View view) {
+        for (TaskInfo taskInfo : userTaskInfos) {
+
+            //判断当前的用户程序是否是自己的程序，如果是自己的程序，就把文本框隐藏了
+            if (taskInfo.getPackageName().equals(getPackageName())){
+                continue;
+            }
+
+            taskInfo.setChecked(!taskInfo.isChecked());
+        }
+        for (TaskInfo taskInfo : systemTaskInfos) {
+            taskInfo.setChecked(!taskInfo.isChecked());
+        }
+        //对当前的额list进行刷新，要不然只能在次进去的时候才能看到结果
+        taskManagerAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 清理进程
+     *
+     * @param view
+     */
+    public void killProcess(View view) {
+
+        //想杀死进程，要得到进程管理器
+        ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+
+        //清理进程的集合
+        List<TaskInfo> killList = new ArrayList<>();
+
+        //清理的总共的进程个数
+        int totalCount = 0;
+
+        //清理的多少的内存
+        int availMemo = 0;
+
+        
+        for (TaskInfo taskInfo:userTaskInfos) {
+            if (taskInfo.isChecked()){
+                //杀死进程  参数是包名
+                killList.add(taskInfo);
+                //userTaskInfos.remove(taskInfo);
+                availMemo += taskInfo.getMemorySize();
+                totalCount++;
+            }
+        }
+
+        for (TaskInfo taskInfo:systemTaskInfos) {
+            if (taskInfo.isChecked()){
+                killList.add(taskInfo);
+                //systemTaskInfos.remove(taskInfo);
+                availMemo += taskInfo.getMemorySize();
+                totalCount++;
+            }
+        }
+
+        /**
+         * 在集合迭代的时候不能更改集合的大小，解决方法是在整一个集合来装他
+         *
+         * 然后在去remove掉
+         */
+        for (TaskInfo taskInfo:killList) {
+            if (taskInfo.isUserApp()){
+                //判断是否是用户app
+                userTaskInfos.remove(taskInfo);
+                activityManager.killBackgroundProcesses(taskInfo.getPackageName());
+
+            } else {
+                systemTaskInfos.remove(taskInfo);
+                activityManager.killBackgroundProcesses(taskInfo.getPackageName());
+
+            }
+        }
+
+        //刷新界面
+        taskManagerAdapter.notifyDataSetInvalidated();
+
+        UIUtils.showToast(this, "一共清理了" + totalCount + "个进程," +
+                "释放了" + Formatter.formatFileSize(this, availMemo) + "内存");
+
+        int count = SystemInfoUtils.getProcessCount(this);
+        tvtaskprocesscount.setText("运行中的进程 ：" + count + "个");
+
+        availMem = SystemInfoUtils.getAvailMem(this)  ;
+
+
+        total = SystemInfoUtils.getTotalMem(this);
+        totalMem = Formatter.formatFileSize(TaskManagerActivity.this, total);
+
+        tvtaskmemory.setText("剩余/总内存 : " + availMem + "/" + totalMem);
+
+    }
+
+    /**
+     * 设置
+     *
+     * @param view
+     */
+    public void setApp(View view) {
+
+    }
+
+
+    public class TaskManagerAdapter extends BaseAdapter {
 
 
         @Override
         public int getCount() {
-            return taskInfos.size() + 2;
+
+            //因为加入了两个特殊的条目
+            return userTaskInfos.size() + 1 + systemTaskInfos.size() + 1;
         }
 
         @Override
         public Object getItem(int position) {
             if (position == 0) {
+                //这个地方是用户进程提示
                 return null;
             } else if (position == userTaskInfos.size() + 1) {
+                //这个地方是系统进程提示
                 return null;
             }
+            //下面的是系统进程和用户进程
 
             TaskInfo taskInfo;
 
@@ -244,7 +397,7 @@ public class TaskManagerActivity extends AppCompatActivity {
                 return textView;
             }
 
-            TaskInfo taskInfo;
+            final TaskInfo taskInfo;
             if (position < userTaskInfos.size() + 1) {
                 //減去多出來的特殊的條目
                 taskInfo = userTaskInfos.get(position - 1);
@@ -252,21 +405,52 @@ public class TaskManagerActivity extends AppCompatActivity {
                 int location = 1 + userTaskInfos.size() + 1;
                 taskInfo = systemTaskInfos.get(position - location);
             }
-
             ViewHolder holder = new ViewHolder();
-            View view = View.inflate(TaskManagerActivity.this, R.layout.item_task_manager, null);
+            View view;
+            if (convertView != null && convertView instanceof LinearLayout) {
 
-            holder.ivicon = (ImageView) view.findViewById(R.id.iv_icon);
-            holder.tvName = (TextView) view.findViewById(R.id.tvName);
-            holder.tvappmemorysize = (TextView) view.findViewById(R.id.tv_app_memory_size);
-            holder.tvappsize = (CheckBox) view.findViewById(R.id.tv_app_size);
+                view = convertView;
+                holder = (ViewHolder) view.getTag();
+
+            } else {
+
+                view = View.inflate(TaskManagerActivity.this, R.layout.item_task_manager, null);
+                holder.ivicon = (ImageView) view.findViewById(R.id.iv_icon);
+                holder.tvName = (TextView) view.findViewById(R.id.tvName);
+                holder.tvappmemorysize = (TextView) view.findViewById(R.id.tv_app_memory_size);
+                holder.check_process = (CheckBox) view.findViewById(R.id.tv_app_size);
+
+                view.setTag(holder);
+            }
+
 
             holder.ivicon.setImageDrawable(taskInfo.getIcon());
             holder.tvName.setText(taskInfo.getAppName());
-            holder.tvappmemorysize.setText(Formatter.formatFileSize(TaskManagerActivity.this,taskInfo.getMemorySize()));
+            String memSize = Formatter.formatFileSize(TaskManagerActivity.this, taskInfo.getMemorySize());
+            holder.tvappmemorysize.setText("内存占用 ： " + memSize);
 
+            //在这里要给checkbox设置一个初始值，要不然的话在全选的时候不会有效果的
+            holder.check_process.setChecked(taskInfo.isChecked());
 
-           // holder.tvappsize
+            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Object obj = listview.getItemAtPosition(position);
+                    if (obj instanceof TaskInfo && obj != null) {
+                        TaskInfo taskinfo = (TaskInfo) obj;
+
+                        ViewHolder ho = (ViewHolder) view.getTag();
+                        //判断当前的item是否被勾选上
+                        if (taskinfo.isChecked()) {
+                            taskinfo.setChecked(false);
+                            ho.check_process.setChecked(false);
+                        } else {
+                            taskinfo.setChecked(true);
+                            ho.check_process.setChecked(true);
+                        }
+                    }
+                }
+            });
 
             return view;
         }
@@ -278,6 +462,6 @@ public class TaskManagerActivity extends AppCompatActivity {
         ImageView ivicon;
         TextView tvName;
         TextView tvappmemorysize;
-        CheckBox tvappsize;
+        CheckBox check_process;
     }
 }

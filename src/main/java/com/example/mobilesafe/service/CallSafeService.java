@@ -47,7 +47,7 @@ public class CallSafeService extends Service {
         tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
 
         listener = new MyPhoneStateListener();
-        tm.listen(listener,Integer.MAX_VALUE);
+        tm.listen(listener,PhoneStateListener.LISTEN_CALL_STATE);
 
         //注册了短信的广播，初始化
         IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
@@ -184,5 +184,6 @@ public class CallSafeService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(receive);
     }
 }

@@ -40,14 +40,17 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
         <CheckBox
             android:id="@+id/tv_app_size"
-            android:gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="20dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:gravity="center_vertical" />
 
     </RelativeLayout>
 

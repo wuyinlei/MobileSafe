@@ -19,24 +19,71 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:textSize="@dimen/txt_m"
-            android:text="运行中进程 ：6个" />
+            android:text="运行中进程 ：6个"
+            android:textSize="@dimen/txt_m" />
 
         <TextView
-            android:textSize="@dimen/txt_m"
             android:id="@+id/tv_task_memory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
-            android:text="剩余/总内存" />
+            android:text="剩余/总内存"
+            android:textSize="@dimen/txt_m" />
     </LinearLayout>
+
     <ListView
         android:id="@+id/list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="23">
 
     </ListView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_selector_green"
+            android:text="全选"
+            android:onClick="selectAll"
+            android:textSize="@dimen/txt_m" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_selector_green"
+            android:text="反选"
+            android:onClick="selectNone"
+            android:textSize="@dimen/txt_m" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_selector_green"
+            android:text="清理"
+            android:onClick="killProcess"
+            android:textSize="@dimen/txt_m" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_selector_green"
+            android:text="设置"
+            android:onClick="setApp"
+            android:textSize="@dimen/txt_m" />
+
+
+    </LinearLayout>
 
 
 </LinearLayout>

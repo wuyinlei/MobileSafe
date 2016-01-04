@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Debug;
+import android.text.format.Formatter;
 
 import com.example.mobilesafe.R;
 import com.example.mobilesafe.bean.TaskInfo;
@@ -36,7 +37,7 @@ public class TaskInfoParser {
         //获取到进程管理器
         ActivityManager activityManager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
 
-        //获取到手机上面所有正在运行的进程
+        // 通过调用ActivityManager的getRunningAppProcesses()方法获得系统里所有正在运行的进程
         List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
 
         for (ActivityManager.RunningAppProcessInfo runprocessInfo : appProcesses) {
@@ -47,17 +48,23 @@ public class TaskInfoParser {
             //installedPackages.
             try {
 
-                int[] pids = new int[1];
+                //获取到当前进程的pid      // 用户ID 类似于Linux的权限不同，ID也就不同 比如 root等
+                int pid = runprocessInfo.pid;
+
+                int[] myMempid = new int[]{pid};
 
                 //获取到内存的基本信息
-                Debug.MemoryInfo[] memoryInfo = activityManager.getProcessMemoryInfo(pids);
-
+                Debug.MemoryInfo[] memoryInfo = activityManager.getProcessMemoryInfo(myMempid);
+                //Debug.MemoryInfo memoryInfo = activityManager.ge;
+                //getTotalPrivateDirty()返回的值单位是KB，所以我们要换算成MB，也就是乘以1024
+                int totalPrivateDirty = memoryInfo[0].getTotalPrivateDirty() * 1024;
                 /**
                  * 这个里面一共只有一个数据
                  */
                 //获取到总共弄脏了多少内存(也就是当前应用程序占用了多少内存)
-                int totalPrivateDirty = memoryInfo[0].getTotalPrivateDirty() * 1024;
+                //int totalPrivateDirty = memoryInfo[0].getTotalPrivateDirty() * 1024;
 
+                Formatter.formatFileSize(context,totalPrivateDirty);
 
                 //获取到进程的名字
                 String processName = runprocessInfo.processName;
@@ -78,7 +85,7 @@ public class TaskInfoParser {
                 //获取到当前应用的额标记
                 int flags = packageInfo.applicationInfo.flags;
 
-                if((flags & ApplicationInfo.FLAG_SYSTEM) != 0){
+                if ((flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
                     //如果是true，就是系统应用
                     taskInfo.setUserApp(false);
                 } else {
@@ -94,9 +101,7 @@ public class TaskInfoParser {
                 taskInfo.setAppName("");
                 taskInfo.setIcon(context.getResources().getDrawable(R.mipmap.ic_launcher));
             }
-
         }
-
         return taskInfos;
     }
 }

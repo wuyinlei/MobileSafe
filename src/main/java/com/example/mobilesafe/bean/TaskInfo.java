@@ -22,6 +22,19 @@ public class TaskInfo {
     private long memorySize;
 
     /**
+     * 判断当前的item的条目是否被勾选上
+     */
+    private boolean checked;
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
+    /**
      * 是否是用户进程
      */
     private boolean userApp;
