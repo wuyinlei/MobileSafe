@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
@@ -119,6 +120,7 @@ public class AntivirusActivity extends AppCompatActivity {
                         //如果为false为没有病毒
                         child.setText(scanInfo.appName + "扫描安全");
                         child.setTextColor(Color.GRAY);
+                        Log.d("AntivirusActivity", "scanInfo.desc:" + scanInfo.desc);
                     } else {
                         child.setText(scanInfo.appName + "有病毒");
                         child.setTextColor(Color.RED);
@@ -189,6 +191,7 @@ public class AntivirusActivity extends AppCompatActivity {
                     //得到文件的MD5值
                     String md5 = MD5Utils.getFileMd5(sourceDir);
 
+                    Log.d("AntivirusActivity", md5 + "      "+ appName);
                     //判断当前文件的MD5值是否在病毒数据库中
                     String desc = AntivirusDao.checkFileVirus(md5);
 

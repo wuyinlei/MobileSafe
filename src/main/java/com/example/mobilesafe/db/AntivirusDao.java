@@ -1,7 +1,10 @@
 package com.example.mobilesafe.db;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.lidroid.xutils.exception.DbException;
 
 /**
  * Created by 若兰 on 2016/1/5.
@@ -32,7 +35,7 @@ public class AntivirusDao {
          * 所以我们通过流的复制，把这个assets目录下的文件复制到了"data/data/com.example.mobilesafe/files"
          * 这个目录下，以达到我们可以读取数据库文件
          */
-        SQLiteDatabase db = SQLiteDatabase.openDatabase(PATH, null, SQLiteDatabase.OPEN_READONLY);
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(PATH, null, SQLiteDatabase.OPEN_READWRITE);
 
         String sql = "select desc from datable where md5 = ?";
 
@@ -44,6 +47,32 @@ public class AntivirusDao {
             //如果可以移动，就代表有病毒，然后把详细信息得到
             desc = cursor.getString(0);
         }
+        db.close();
+        cursor.close();
         return desc;
+    }
+
+    /**
+     * 添加病毒数据库
+     * @param md5   特征码
+     * @param desc   描述信息
+     */
+    public static void addVirus(String md5,String desc){
+
+        SQLiteDatabase db = SQLiteDatabase.openDatabase(PATH, null, SQLiteDatabase.OPEN_READWRITE);
+
+        ContentValues values = new ContentValues();
+
+        values.put("md5",md5);
+        values.put("type",6);
+        values.put("name","Android.Troj.AirAD.a");
+        values.put("desc",desc);
+
+        db.insert("datable",null,values);
+
+        db.close();
+
+
+
     }
 }

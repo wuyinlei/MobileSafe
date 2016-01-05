@@ -17,6 +17,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.mobilesafe.R;
+import com.example.mobilesafe.bean.Virus;
+import com.example.mobilesafe.db.AntivirusDao;
+import com.google.gson.Gson;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,6 +54,7 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
             }
         }
     };
+    private AntivirusDao dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +86,57 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
      */
     private void updateVirus() {
 
+        //进行联网，从服务器获取到最新的md5特征码
+
+        HttpUtils httpUtils = new HttpUtils();
+
+        String url = "http://113.229.155.154:8080/virus.json";
+        httpUtils.send(HttpMethod.GET, url, new RequestCallBack<String>() {
+
+            @Override
+            public void onFailure(HttpException arg0, String arg1) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onSuccess(ResponseInfo<String> arg0) {
+                Log.d("SplashActivity", arg0.result);
+//				﻿{"md5":"51dc6ba54cbfbcff299eb72e79e03668","desc":"蝗虫病毒赶快卸载"}
+
+                try {
+                    JSONObject jsonObject = new JSONObject(arg0.result);
+
+                    dao = new AntivirusDao();
+
+                    //google的json解析
+                    Gson gson = new Gson();
+
+                    /**
+                     * {"md5":"bad92c883efe5e87937baf206e1faa12","desc":"蝗虫病毒，赶快卸载"}
+                     *
+                     *  在这里我们只需要定义好我们得额javabean对象就行，key和服务器的key要一一对应
+                     *
+                     *  比如上面的我们的那个服务器的key是md5  和  desc
+                     *  那么我们的javabean中的字段名也要是md5 和 desc  大小写也要是一样的，这样才能
+                     *  继续往下工作，要不然解析不出来
+                     */
+
+
+                    Virus virus = gson.fromJson(arg0.result,Virus.class);
+                /*
+                    String md5 = jsonObject.getString("md5");
+                    String desc = jsonObject.getString("desc");*/
+                    //dao.addVirus(virus.md5,virus.desc);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        });
 
 
 
