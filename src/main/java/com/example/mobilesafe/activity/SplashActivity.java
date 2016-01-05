@@ -57,6 +57,8 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
 
         createShortcut();
 
+        updateVirus();
+
         //判断是否自动更新
         boolean autoUpdate = mPres.getBoolean("auto_update", true);
         if (autoUpdate) {
@@ -65,6 +67,16 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
             handler.sendEmptyMessageAtTime(CODE_CENTER_HOME, 2000);
         }
         initControl();
+    }
+
+    /**
+     * 更新病毒数据库
+     */
+    private void updateVirus() {
+
+
+
+
     }
 
     /**

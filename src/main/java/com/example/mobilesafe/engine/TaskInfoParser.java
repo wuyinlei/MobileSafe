@@ -26,7 +26,9 @@ import java.util.List;
 
 public class TaskInfoParser {
 
-    //获取到所有的线程的信息
+    /**
+     *  获取到所有的线程的信息
+     */
     public static List<TaskInfo> getTaskInfos(Context context) {
 
         List<TaskInfo> taskInfos = new ArrayList<TaskInfo>();
