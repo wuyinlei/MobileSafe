@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:layout_toRightOf="@+id/iv_icon"
+        android:id="@+id/tv_name"
+        android:text="程序名字"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="11"
+        android:textSize="@dimen/txt_l"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:id="@+id/lock_app"
+        android:background="@drawable/btn_unlock_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+</LinearLayout>

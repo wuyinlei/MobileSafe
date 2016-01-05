@@ -85,4 +85,14 @@ public class AToolsActivity extends AppCompatActivity {
 
 
     }
+
+
+    /**
+     * 软件锁
+     * @param view
+     */
+    public void appLock(View view){
+       Intent intent =  new Intent(this,AppLockActivity.class);
+        startActivity(intent);
+    }
 }

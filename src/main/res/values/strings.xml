@@ -6,4 +6,7 @@
     <string name="set_password">设置密码</string>
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

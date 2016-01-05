@@ -101,7 +101,6 @@ public class SplashActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onSuccess(ResponseInfo<String> arg0) {
-                Log.d("SplashActivity", arg0.result);
 //				﻿{"md5":"51dc6ba54cbfbcff299eb72e79e03668","desc":"蝗虫病毒赶快卸载"}
 
                 try {

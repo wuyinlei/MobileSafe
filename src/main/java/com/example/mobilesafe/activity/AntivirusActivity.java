@@ -16,6 +16,7 @@ import android.widget.EdgeEffect;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.mobilesafe.R;
@@ -52,6 +53,7 @@ public class AntivirusActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private TextView tv_init_virus;
     private LinearLayout ll_content;
+    private ScrollView scrollView;
 
 
     private ScanInfo scanInfo;
@@ -77,6 +79,7 @@ public class AntivirusActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         tv_init_virus = (TextView) findViewById(R.id.tv_init_virus);
         ll_content = (LinearLayout) findViewById(R.id.ll_content);
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
         initAnimation();
 
     }
@@ -101,6 +104,9 @@ public class AntivirusActivity extends AppCompatActivity {
         ivScanning.startAnimation(rotateAnimation);
     }
 
+    /**
+     * 接收消息的handler
+     */
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -112,6 +118,7 @@ public class AntivirusActivity extends AppCompatActivity {
                 case SCANING:
                     tv_init_virus.setText("正在查杀病毒");
 
+
                     TextView child = new TextView(AntivirusActivity.this);
                     ScanInfo scanInfo = (ScanInfo) msg.obj;
 
@@ -120,12 +127,21 @@ public class AntivirusActivity extends AppCompatActivity {
                         //如果为false为没有病毒
                         child.setText(scanInfo.appName + "扫描安全");
                         child.setTextColor(Color.GRAY);
-                        Log.d("AntivirusActivity", "scanInfo.desc:" + scanInfo.desc);
+                       // Log.d("AntivirusActivity", "scanInfo.desc:" + scanInfo.desc);
                     } else {
                         child.setText(scanInfo.appName + "有病毒");
                         child.setTextColor(Color.RED);
                     }
                     ll_content.addView(child);
+
+                    //自动滚动
+                    scrollView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            scrollView.fullScroll(scrollView.FOCUS_DOWN);
+                        }
+                    });
+
 
                     break;
                 case FINISH:
@@ -148,6 +164,7 @@ public class AntivirusActivity extends AppCompatActivity {
                 super.run();
 
 
+                //杀毒刚开始的时候的消息
                 message = Message.obtain();
                 message.what = BEGIN;
 
@@ -191,7 +208,7 @@ public class AntivirusActivity extends AppCompatActivity {
                     //得到文件的MD5值
                     String md5 = MD5Utils.getFileMd5(sourceDir);
 
-                    Log.d("AntivirusActivity", md5 + "      "+ appName);
+                   // Log.d("AntivirusActivity", md5 + "      "+ appName);
                     //判断当前文件的MD5值是否在病毒数据库中
                     String desc = AntivirusDao.checkFileVirus(md5);
 
@@ -208,8 +225,8 @@ public class AntivirusActivity extends AppCompatActivity {
                     SystemClock.sleep(100);
                     progressBar.setProgress(process);
 
+                    //杀毒进行的时候的消息
                     message = Message.obtain();
-
                     message.what = SCANING;
                     message.obj = scanInfo;
 
@@ -217,6 +234,7 @@ public class AntivirusActivity extends AppCompatActivity {
 
                 }
 
+                //杀毒完成后的消息
                 message = Message.obtain();
                 message.what = FINISH;
                 handler.sendMessage(message);

@@ -508,5 +508,6 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
     protected void onDestroy() {
         popupWindowDismiss();
         super.onDestroy();
+        unregisterReceiver(uninstallReceiver);
     }
 }

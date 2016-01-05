@@ -27,7 +27,11 @@ public class AppInfos {
     private static PackageManager packageManager;
     private static List<APPinfo> apPinfos = new ArrayList<>();
 
-    //获取到所有的应用信息
+    /**
+     *  获取到所有的应用信息
+     *
+     *  包括应用程序的包名   程序名   图标    内存   等
+     */
     public static List<APPinfo> getAppInfos(Context context) {
 
         /**
@@ -91,6 +95,7 @@ public class AppInfos {
 
 
             apPinfos.add(apPinfo);
+            apPinfo = null;
 
 
             //Log.d("AppInfos",  apkName + packageName + length);

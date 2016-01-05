@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.mobilesafe.activity.AppLockActivity">
+
+    <TextView
+        style="@style/TitleStyle"
+        android:text="软件锁"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/unLock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/tab_left_default"
+            android:gravity="center"
+            android:text="未加锁"
+            android:textSize="@dimen/txt_l" />
+
+        <TextView
+            android:id="@+id/locking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/tab_right_pressed"
+            android:gravity="center"
+            android:text="已加锁"
+            android:textSize="@dimen/txt_l" />
+    </LinearLayout>
+
+   <FrameLayout
+       android:id="@+id/fr_content"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+
+   </FrameLayout>
+</LinearLayout>
