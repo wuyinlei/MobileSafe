@@ -2,10 +2,13 @@ package com.example.mobilesafe.fragment;
 
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -33,10 +36,27 @@ public class LockingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_locking, container, false);
-        tvunlock = (TextView) view.findViewById(R.id.tv_unlock);
-        listview = (ListView) view.findViewById(R.id.list_view);
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_locking, container, false);
+            tvunlock = (TextView) view.findViewById(R.id.tv_unlock);
+            listview = (ListView) view.findViewById(R.id.list_view);
 
+
+           /* lockLists = new ArrayList<>();
+
+            dao = new AppLockDao(getActivity());
+            appInfos = AppInfos.getAppInfos(getActivity());
+            for (APPinfo appInfo:appInfos) {
+                //如果能找到当前的包名，说明在当前的程序锁的数据库中
+                if (dao.find(appInfo.getApkPageName())){
+                    lockLists.add(appInfo);
+                } else {
+                }
+            }
+            adapter = new LockAdapter();
+
+            listview.setAdapter(adapter);*/
+        }
         return view;
     }
 
@@ -44,21 +64,25 @@ public class LockingFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        //拿到所有的应用程序
+        List<APPinfo> appInfos = AppInfos.getAppInfos(getActivity());
+        //初始化一个加锁的集合
 
-        lockLists = new ArrayList<>();
+        lockLists = new ArrayList<APPinfo>();
+
 
         dao = new AppLockDao(getActivity());
-        appInfos = AppInfos.getAppInfos(getActivity());
-        for (APPinfo appInfo:appInfos) {
-            //如果能找到当前的包名，说明在当前的程序锁的数据库中
-            if (dao.find(appInfo.getApkPageName())){
+        for (APPinfo appInfo : appInfos) {
+            //如果能找到当前的包名说明在程序锁的数据库里面
+            if(dao.find(appInfo.getApkPageName())){
                 lockLists.add(appInfo);
-            } else {
+            }else{
+
             }
         }
         adapter = new LockAdapter();
-
         listview.setAdapter(adapter);
+
     }
 
     private class LockAdapter  extends BaseAdapter{
@@ -80,7 +104,7 @@ public class LockingFragment extends Fragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             final View view;
             final APPinfo apPinfo;
@@ -99,16 +123,46 @@ public class LockingFragment extends Fragment {
                 holder = (ViewHolder) view.getTag();
             }
 
-            holder.iv_icon.setImageDrawable(lockLists.get(position).getIcon());
-            holder.tv_name.setText(lockLists.get(position).getApkName());
-
             apPinfo = lockLists.get(position);
+
+            holder.iv_icon.setImageDrawable(apPinfo.getIcon());
+            holder.tv_name.setText(apPinfo.getApkName());
+
+
+            holder.iv_unlock.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TranslateAnimation animation = new TranslateAnimation(Animation.RELATIVE_TO_SELF
+                            , 0, Animation.RELATIVE_TO_SELF
+                            , -1.0f, Animation.RELATIVE_TO_SELF, 0, Animation.RELATIVE_TO_SELF
+                            , 0);
+                    animation.setDuration(5000);
+                    view.startAnimation(animation);
+
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            SystemClock.sleep(5000);
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dao.delete(apPinfo.getApkPageName());
+                                    lockLists.remove(position);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        }
+                    }.start();
+
+                }
+            });
 
             return view;
         }
     }
 
-    class ViewHolder {
+    static class ViewHolder {
 
         private ImageView iv_icon;
         private TextView tv_name;

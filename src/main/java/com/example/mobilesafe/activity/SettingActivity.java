@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.example.mobilesafe.R;
 import com.example.mobilesafe.service.AddressService;
 import com.example.mobilesafe.service.CallSafeService;
+import com.example.mobilesafe.service.WatchDogService;
 import com.example.mobilesafe.utils.SystemInfoUtils;
 import com.example.mobilesafe.view.SettingClickView;
 import com.example.mobilesafe.view.SettingItemView;
@@ -25,7 +26,7 @@ public class SettingActivity extends AppCompatActivity {
 
     private TextView tvtitle;
     private TextView tvdesc;
-    private SettingItemView siv_update,siv_address,siv_callsafe;
+    private SettingItemView siv_update,siv_address,siv_callsafe,siv_watch_dog;
     private SettingClickView scvStyle,scvLocation;
     private SharedPreferences mPrefs;
     int style;
@@ -44,6 +45,37 @@ public class SettingActivity extends AppCompatActivity {
         initAddressStyle();
         initAddresssLocation();
         initCallSafe();
+        initWatchDog();
+    }
+
+    /**
+     * 初始化看门狗的服务
+     */
+    private void initWatchDog() {
+        //根据归属地服务是否运行来更新选择框
+        boolean serviceRunning = SystemInfoUtils.isServiceRunning(this, "com.example.mobilesafe.service.WatchDogService");
+
+        //判断该服务是否运行，如果没有运行，勾选框就会不勾选
+        if (serviceRunning){
+            siv_watch_dog.setChecked(true);
+        } else {
+            siv_watch_dog.setChecked(false);
+        }
+        siv_watch_dog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (siv_watch_dog.isChecked()) {
+                    siv_watch_dog.setChecked(false);
+                    //停止看门狗服务
+                    stopService(new Intent(SettingActivity.this, WatchDogService.class));
+                } else {
+                    siv_watch_dog.setChecked(true);
+                    //开启看门狗服务
+                    startService(new Intent(SettingActivity.this, WatchDogService.class));
+                }
+            }
+        });
     }
 
     /**
@@ -55,6 +87,7 @@ public class SettingActivity extends AppCompatActivity {
         siv_update = (SettingItemView) findViewById(R.id.siv_update);
         siv_address = (SettingItemView) findViewById(R.id.siv_address);
         siv_callsafe = (SettingItemView) findViewById(R.id.siv_callsafe);
+        siv_watch_dog = (SettingItemView) findViewById(R.id.siv_watch_dog);
     }
 
     /**
@@ -114,6 +147,8 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     /**
      * 初始化电话号码归属地的显示的服务

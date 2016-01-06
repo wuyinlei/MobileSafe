@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 /**
@@ -34,6 +36,7 @@ public class AppLockDao {
     public void addApp(String packageName) {
         db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
+
         values.put("packagename", packageName);
 
         db.insert("info", null, values);
@@ -69,5 +72,21 @@ public class AppLockDao {
         db.close();
         return result;
 
+    }
+
+    /**
+     * 查询全部的锁定的包名
+     * @return
+     */
+    public List<String> findAll(){
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query("info", new String[]{"packagename"}, null, null, null, null, null);
+        List<String> packnames = new ArrayList<String>();
+        while(cursor.moveToNext()){
+            packnames.add(cursor.getString(0));
+        }
+        cursor.close();
+        db.close();
+        return packnames;
     }
 }

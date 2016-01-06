@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +34,6 @@ import com.example.mobilesafe.bean.APPinfo;
 import com.example.mobilesafe.engine.AppInfos;
 
 import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 /**
@@ -240,6 +236,11 @@ public class AppManagerActivity extends AppCompatActivity implements View.OnClic
         }
     };
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     /**
      * 初始化app的资源信息

@@ -44,5 +44,14 @@
         app:desc_on="黑名单更新已开启"
         app:title_update="黑名单拦截设置" />
 
+    <com.example.mobilesafe.view.SettingItemView
+        android:id="@+id/siv_watch_dog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:desc_off="看门狗已关闭"
+        app:desc_on="看门狗已开启"
+        app:title_update="看门狗设置" />
+
+
 
 </LinearLayout>
